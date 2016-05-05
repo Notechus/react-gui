@@ -1,0 +1,131 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #cccccc;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    float: left;
+    margin-right: 5px;
+}
+
+#brand-name {
+    font-family: Satisfy, serif;
+}
+
+.logout-button {
+    overflow: hidden;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.right-menu {
+    overflow: hidden;
+    float: right;
+}
+
+#mainBody {
+    position: absolute;
+    width: 74%;
+    height: 91%;
+    left: 5px;
+    padding: 10px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
+#clockBar {
+    vertical-align: top;
+    position: absolute;
+    padding: 10px;
+    width: 25%;
+    height: 25%;
+    right: 5px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
+#statusBar {
+    position: absolute;
+    padding: 10px;
+    width: 25%;
+    height: 25%;
+    right: 5px;
+    bottom: 5px;
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
+#statusPanel {
+    position: relative;
+    padding: 10px;
+    height: 30%;
+}
+
+.clock {
+    font-family: courier, monospace;
+    text-align: center;
+    /*font-size: 35px;*/
+    font-size: 3vh;
+}
+
+.clockCity {
+    font-family: courier, monospace;
+    text-align: center;
+    /*font-size: 30px;*/
+    font-size: 3vh;
+}
+
+.clockDefaults {
+    position: absolute;
+    width: 46%;
+    height: 46%;
+    /*background-color: #80d4ea;*/
+    background-color: #eee;
+    border-radius: 3px;
+    padding: 5px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #fff;
+    text-shadow: 0 1px 1px #fff;
+    box-shadow: 2px 2px 1px black;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+}
+
+#yourClock {
+    left: 10px;
+    top: 10px;
+}
+
+#tokClock {
+    left: 10px;
+    bottom: 10px;
+}
+
+#nyClock {
+    right: 10px;
+    top: 10px;
+}
+
+#lonClock {
+    right: 10px;
+    bottom: 10px;
+}
+
+#websockData {
+    display: inline-block;
+    position: relative;
+    float: left;
+    width: 80%;
+    height: 800px;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: #cccccc;
+    overflow: scroll;
+}
