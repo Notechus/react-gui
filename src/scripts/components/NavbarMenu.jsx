@@ -6,7 +6,6 @@ var Avatar = require('./Avatar');
 
 const NavbarMenu = React.createClass({
     changePageView: function (eventKey, event) {
-        console.log("View changed to: " + eventKey);
         this.props.handleViews(eventKey);
     },
     render: function () {

@@ -60,23 +60,29 @@ body {
     border-radius: 5px;
 }
 
-#statusPanel {
-    position: relative;
+.statusPanel {
+    position: absolute;
     padding: 10px;
-    height: 30%;
+    top: 10px;
+}
+
+.pvPanel {
+    left: 10px;
+}
+
+.deltaPanel {
+    left: 25%;
 }
 
 .clock {
     font-family: courier, monospace;
     text-align: center;
-    /*font-size: 35px;*/
     font-size: 3vh;
 }
 
 .clockCity {
     font-family: courier, monospace;
     text-align: center;
-    /*font-size: 30px;*/
     font-size: 3vh;
 }
 
@@ -84,7 +90,6 @@ body {
     position: absolute;
     width: 46%;
     height: 46%;
-    /*background-color: #eee;*/
     background-color: lightgray;
     border-radius: 3px;
     padding: 5px;
@@ -118,14 +123,28 @@ body {
     bottom: 10px;
 }
 
-#websockData {
-    display: inline-block;
-    position: relative;
-    float: left;
-    width: 80%;
-    height: 800px;
-    border: 1px solid black;
-    padding: 10px;
-    background-color: #cccccc;
-    overflow: scroll;
+.actualStockPrice {
+    border-radius: 2px;
 }
+
+.tradeStoreDefaults {
+    position: absolute;
+    width: 48%;
+    height: 40%;
+    border: 1px outset white;
+    border-radius: 3px;
+}
+
+.createOption {
+    left: 10px;
+}
+
+.tradeOption {
+    right: 10px;
+}
+
+.tradeStock {
+    left: 10px;
+    bottom: 10px;
+}
+

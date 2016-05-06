@@ -1,7 +1,7 @@
 var React = require('react');
 var Table = require('react-bootstrap/lib/Table');
 
-var MarketTable = React.createClass({
+var PortfolioTable = React.createClass({
     render: function () {
         return (<Table responsive>
                 <thead>
@@ -45,4 +45,4 @@ var MarketTable = React.createClass({
     }
 });
 
-module.exports = MarketTable;
+module.exports = PortfolioTable;

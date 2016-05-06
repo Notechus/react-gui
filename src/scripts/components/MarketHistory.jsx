@@ -5,7 +5,7 @@ var Glyphicon = require('react-bootstrap/lib/Glyphicon');
 
 var ActualStockHistory = React.createClass({
         getInitialState: function () {
-            return ({stockData: [], chartStockData: []});
+            return ({stockData: [], chartStockData: [], webSock: null});
         },
         handleMessage: function (event) {
             var tmp = JSON.parse(event.data);
@@ -28,7 +28,11 @@ var ActualStockHistory = React.createClass({
         },
         componentDidMount: function () {
             var ws = new WebSocket("ws://karnicki.pl/api/WSChat");
+            this.state.webSock = ws;
             ws.onmessage = this.handleMessage;
+        },
+        componentWillUnmount: function () {
+            this.state.webSock.close();
         },
         render: function () {
             var stocks = this.state.stockData.map(function (elem) {

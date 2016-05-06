@@ -20835,7 +20835,6 @@
 	    displayName: 'NavbarMenu',
 
 	    changePageView: function changePageView(eventKey, event) {
-	        console.log("View changed to: " + eventKey);
 	        this.props.handleViews(eventKey);
 	    },
 	    render: function render() {
@@ -24458,31 +24457,70 @@
 
 	var React = __webpack_require__(1);
 	var Panel = __webpack_require__(243);
+	var Button = __webpack_require__(239);
+	var Glyphicon = __webpack_require__(240);
+
+	var CustomPanel = React.createClass({
+	    displayName: 'CustomPanel',
+
+	    getInitialState: function getInitialState() {
+	        return { value: 0.0, previousValue: 0.0 };
+	    },
+	    componentDidMount: function componentDidMount() {
+	        this.setState({ value: this.props.initialValue });
+	    },
+	    render: function render() {
+	        var delta = this.state.value - this.state.previousValue;
+	        if (delta > 0) {
+	            return React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'success' },
+	                this.props.name,
+	                React.createElement('br', null),
+	                parseFloat(this.state.value).toFixed(2),
+	                ' ',
+	                React.createElement(Glyphicon, { glyph: 'arrow-up' })
+	            );
+	        } else if (delta < 0) {
+	            return React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'danger' },
+	                this.props.name,
+	                React.createElement('br', null),
+	                parseFloat(this.state.value).toFixed(2),
+	                ' ',
+	                React.createElement(Glyphicon, { glyph: 'arrow-down' })
+	            );
+	        } else {
+	            return React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'primary' },
+	                this.props.name,
+	                React.createElement('br', null),
+	                parseFloat(this.state.value).toFixed(2),
+	                ' '
+	            );
+	        }
+	    }
+	});
 
 	var StatusPanel = React.createClass({
 	    displayName: 'StatusPanel',
 
+	    handleStatus: function handleStatus() {},
 	    render: function render() {
 	        return React.createElement(
 	            'div',
 	            { className: 'container', id: 'statusBar' },
 	            React.createElement(
-	                Panel,
-	                { id: 'statusPanel' },
-	                React.createElement(
-	                    'p',
-	                    null,
-	                    'PV'
-	                )
+	                'div',
+	                { className: 'statusPanel pvPanel' },
+	                React.createElement(CustomPanel, { name: 'PV', initialValue: 1.5 })
 	            ),
 	            React.createElement(
-	                Panel,
-	                { id: 'statusPanel' },
-	                React.createElement(
-	                    'p',
-	                    null,
-	                    'Delta'
-	                )
+	                'div',
+	                { className: 'statusPanel deltaPanel' },
+	                React.createElement(CustomPanel, { name: 'Delta', initialValue: -1.5 })
 	            )
 	        );
 	    }
@@ -24889,8 +24927,8 @@
 	'use strict';
 
 	var React = __webpack_require__(1);
-	var MarketTable = __webpack_require__(246);
-	var PageHeader = __webpack_require__(248);
+	var PageHeader = __webpack_require__(246);
+	var PortfolioTable = __webpack_require__(247);
 	var MarketHistory = __webpack_require__(249);
 	var TradeStore = __webpack_require__(251);
 
@@ -24908,7 +24946,7 @@
 	                        null,
 	                        ' Portfolio'
 	                    ),
-	                    React.createElement(MarketTable, null)
+	                    React.createElement(PortfolioTable, null)
 	                );
 	            case 2:
 	                return React.createElement(
@@ -24944,11 +24982,50 @@
 
 	'use strict';
 
-	var React = __webpack_require__(1);
-	var Table = __webpack_require__(247);
+	var _extends = __webpack_require__(167)['default'];
 
-	var MarketTable = React.createClass({
-	    displayName: 'MarketTable',
+	var _interopRequireDefault = __webpack_require__(187)['default'];
+
+	exports.__esModule = true;
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _classnames = __webpack_require__(188);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var PageHeader = _react2['default'].createClass({
+	  displayName: 'PageHeader',
+
+	  render: function render() {
+	    return _react2['default'].createElement(
+	      'div',
+	      _extends({}, this.props, { className: _classnames2['default'](this.props.className, 'page-header') }),
+	      _react2['default'].createElement(
+	        'h1',
+	        null,
+	        this.props.children
+	      )
+	    );
+	  }
+	});
+
+	exports['default'] = PageHeader;
+	module.exports = exports['default'];
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var Table = __webpack_require__(248);
+
+	var PortfolioTable = React.createClass({
+	    displayName: 'PortfolioTable',
 
 	    render: function render() {
 	        return React.createElement(
@@ -25102,10 +25179,10 @@
 	    }
 	});
 
-	module.exports = MarketTable;
+	module.exports = PortfolioTable;
 
 /***/ },
-/* 247 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -25171,45 +25248,6 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 248 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = __webpack_require__(167)['default'];
-
-	var _interopRequireDefault = __webpack_require__(187)['default'];
-
-	exports.__esModule = true;
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _classnames = __webpack_require__(188);
-
-	var _classnames2 = _interopRequireDefault(_classnames);
-
-	var PageHeader = _react2['default'].createClass({
-	  displayName: 'PageHeader',
-
-	  render: function render() {
-	    return _react2['default'].createElement(
-	      'div',
-	      _extends({}, this.props, { className: _classnames2['default'](this.props.className, 'page-header') }),
-	      _react2['default'].createElement(
-	        'h1',
-	        null,
-	        this.props.children
-	      )
-	    );
-	  }
-	});
-
-	exports['default'] = PageHeader;
-	module.exports = exports['default'];
-
-/***/ },
 /* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -25224,11 +25262,10 @@
 	    displayName: 'ActualStockHistory',
 
 	    getInitialState: function getInitialState() {
-	        return { stockData: [], chartStockData: [] };
+	        return { stockData: [], chartStockData: [], webSock: null };
 	    },
 	    handleMessage: function handleMessage(event) {
 	        var tmp = JSON.parse(event.data);
-	        console.log(tmp);
 	        var tmpStock = this.state.stockData;
 	        var exists = false;
 	        var index = 0;
@@ -25236,23 +25273,23 @@
 	            if (tmpStock[i].Name === tmp.Name) {
 	                index = i;
 	                exists = true;
-	                // tmpStock[tmp.Name].OldPrice = tmp.OldPrice;
-	                // tmpStock[tmp.Name].Price = tmp.Price;
 	                break;
 	            }
 	        }
 	        if (exists) {
-	            console.log("it exists: " + tmp);
 	            tmpStock[i] = tmp;
 	        } else {
-	            console.log("it doesnt exist");
 	            tmpStock.push(tmp);
 	        }
 	        this.setState({ stockData: tmpStock });
 	    },
 	    componentDidMount: function componentDidMount() {
 	        var ws = new WebSocket("ws://karnicki.pl/api/WSChat");
+	        this.state.webSock = ws;
 	        ws.onmessage = this.handleMessage;
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        this.state.webSock.close();
 	    },
 	    render: function render() {
 	        var stocks = this.state.stockData.map(function (elem) {
@@ -25372,20 +25409,105 @@
 	'use strict';
 
 	var React = __webpack_require__(1);
+	var Label = __webpack_require__(252);
 
 	var TradeStore = React.createClass({
 	    displayName: 'TradeStore',
 
 	    render: function render() {
 	        return React.createElement(
-	            'h1',
-	            null,
-	            'Trade'
+	            'div',
+	            { className: 'tradeStoreView' },
+	            React.createElement(
+	                'div',
+	                { className: 'tradeStoreDefaults createOption' },
+	                React.createElement(
+	                    Label,
+	                    null,
+	                    'Create Option'
+	                )
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'tradeStoreDefaults tradeOption' },
+	                React.createElement(
+	                    Label,
+	                    null,
+	                    'Trade Option'
+	                )
+	            ),
+	            React.createElement(
+	                'div',
+	                { className: 'tradeStoreDefaults tradeStock' },
+	                React.createElement(
+	                    Label,
+	                    null,
+	                    'Trade Stock'
+	                )
+	            )
 	        );
 	    }
 	});
 
 	module.exports = TradeStore;
+
+/***/ },
+/* 252 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _inherits = __webpack_require__(196)['default'];
+
+	var _classCallCheck = __webpack_require__(203)['default'];
+
+	var _extends = __webpack_require__(167)['default'];
+
+	var _interopRequireDefault = __webpack_require__(187)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(188);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _styleMaps = __webpack_require__(189);
+
+	var _utilsBootstrapUtils = __webpack_require__(207);
+
+	var Label = (function (_React$Component) {
+	  _inherits(Label, _React$Component);
+
+	  function Label() {
+	    _classCallCheck(this, _Label);
+
+	    _React$Component.apply(this, arguments);
+	  }
+
+	  Label.prototype.render = function render() {
+	    var classes = _utilsBootstrapUtils.getClassSet(this.props);
+
+	    return _react2['default'].createElement(
+	      'span',
+	      _extends({}, this.props, {
+	        className: _classnames2['default'](this.props.className, classes)
+	      }),
+	      this.props.children
+	    );
+	  };
+
+	  var _Label = Label;
+	  Label = _utilsBootstrapUtils.bsStyles(_styleMaps.State.values().concat(_styleMaps.DEFAULT, _styleMaps.PRIMARY), _styleMaps.DEFAULT)(Label) || Label;
+	  Label = _utilsBootstrapUtils.bsClass('label')(Label) || Label;
+	  return Label;
+	})(_react2['default'].Component);
+
+	exports['default'] = Label;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);
