@@ -57,12 +57,18 @@
 	var App = React.createClass({
 	    displayName: 'App',
 
+	    handleViews: function handleViews(key) {
+	        if (this.state.view != key) this.setState({ view: key });
+	    },
+	    getInitialState: function getInitialState() {
+	        return { view: 1 };
+	    },
 	    render: function render() {
 	        return React.createElement(
 	            'div',
 	            null,
-	            React.createElement(NavbarMenu, null),
-	            React.createElement(MainBody, null),
+	            React.createElement(NavbarMenu, { handleViews: this.handleViews }),
+	            React.createElement(MainBody, { view: this.state.view }),
 	            React.createElement(ClockPanel, null),
 	            React.createElement(StatusPanel, null)
 	        );
@@ -20828,6 +20834,10 @@
 	var NavbarMenu = React.createClass({
 	    displayName: 'NavbarMenu',
 
+	    changePageView: function changePageView(eventKey, event) {
+	        console.log("View changed to: " + eventKey);
+	        this.props.handleViews(eventKey);
+	    },
 	    render: function render() {
 	        return React.createElement(
 	            Navbar,
@@ -20840,7 +20850,7 @@
 	                    null,
 	                    React.createElement(
 	                        'a',
-	                        { href: '#', id: 'brand-name' },
+	                        { id: 'brand-name' },
 	                        'Trade Application'
 	                    )
 	                )
@@ -20850,17 +20860,17 @@
 	                null,
 	                React.createElement(
 	                    NavItem,
-	                    { eventKey: 1, href: '#' },
+	                    { eventKey: 1, onSelect: this.changePageView, href: '#' },
 	                    'Portfolio'
 	                ),
 	                React.createElement(
 	                    NavItem,
-	                    { eventKey: 2, href: '#' },
+	                    { eventKey: 2, onSelect: this.changePageView, href: '#' },
 	                    'Market Data'
 	                ),
 	                React.createElement(
 	                    NavItem,
-	                    { eventKey: 3, href: '#' },
+	                    { eventKey: 3, onSelect: this.changePageView, href: '#' },
 	                    'Trade Store'
 	                )
 	            ),
@@ -24881,21 +24891,48 @@
 	var React = __webpack_require__(1);
 	var MarketTable = __webpack_require__(246);
 	var PageHeader = __webpack_require__(248);
+	var MarketHistory = __webpack_require__(249);
+	var TradeStore = __webpack_require__(251);
 
 	var MainBody = React.createClass({
 	    displayName: 'MainBody',
 
 	    render: function render() {
-	        return React.createElement(
-	            'div',
-	            { className: 'container', id: 'mainBody' },
-	            React.createElement(
-	                PageHeader,
-	                null,
-	                ' Portfolio'
-	            ),
-	            React.createElement(MarketTable, null)
-	        );
+	        switch (this.props.view) {
+	            case 1:
+	                return React.createElement(
+	                    'div',
+	                    { className: 'container', id: 'mainBody' },
+	                    React.createElement(
+	                        PageHeader,
+	                        null,
+	                        ' Portfolio'
+	                    ),
+	                    React.createElement(MarketTable, null)
+	                );
+	            case 2:
+	                return React.createElement(
+	                    'div',
+	                    { className: 'container', id: 'mainBody' },
+	                    React.createElement(
+	                        PageHeader,
+	                        null,
+	                        ' Market Data'
+	                    ),
+	                    React.createElement(MarketHistory, null)
+	                );
+	            case 3:
+	                return React.createElement(
+	                    'div',
+	                    { className: 'container', id: 'mainBody' },
+	                    React.createElement(
+	                        PageHeader,
+	                        null,
+	                        ' Trade Store'
+	                    ),
+	                    React.createElement(TradeStore, null)
+	                );
+	        }
 	    }
 	});
 
@@ -25171,6 +25208,147 @@
 
 	exports['default'] = PageHeader;
 	module.exports = exports['default'];
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var ButtonToolbar = __webpack_require__(250);
+	var Button = __webpack_require__(239);
+
+	var ActualStockHistory = React.createClass({
+	    displayName: 'ActualStockHistory',
+
+	    getInitialState: function getInitialState() {
+	        return { stockData: [] };
+	    },
+	    render: function render() {
+	        return React.createElement(
+	            ButtonToolbar,
+	            null,
+	            React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'primary' },
+	                'Primary'
+	            ),
+	            React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'success' },
+	                'Success'
+	            ),
+	            React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'info' },
+	                'Info'
+	            ),
+	            React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'warning' },
+	                'Warning'
+	            ),
+	            React.createElement(
+	                Button,
+	                { bsSize: 'large', bsStyle: 'danger' },
+	                'Danger'
+	            )
+	        );
+	    }
+	});
+
+	var MarketHistory = React.createClass({
+	    displayName: 'MarketHistory',
+
+	    render: function render() {
+	        return React.createElement(
+	            'div',
+	            { id: 'actualStockPrice' },
+	            React.createElement(ActualStockHistory, null)
+	        );
+	    }
+	});
+
+	module.exports = MarketHistory;
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = __webpack_require__(167)['default'];
+
+	var _interopRequireDefault = __webpack_require__(187)['default'];
+
+	exports.__esModule = true;
+
+	var _classnames = __webpack_require__(188);
+
+	var _classnames2 = _interopRequireDefault(_classnames);
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _utilsBootstrapUtils = __webpack_require__(207);
+
+	var _Button = __webpack_require__(239);
+
+	var _Button2 = _interopRequireDefault(_Button);
+
+	var ButtonToolbar = _react2['default'].createClass({
+	  displayName: 'ButtonToolbar',
+
+	  propTypes: {
+	    bsSize: _Button2['default'].propTypes.bsSize
+	  },
+
+	  getDefaultProps: function getDefaultProps() {
+	    return {
+	      bsClass: 'btn-toolbar'
+	    };
+	  },
+
+	  render: function render() {
+	    var classes = _utilsBootstrapUtils.getClassSet(this.props);
+
+	    return _react2['default'].createElement(
+	      'div',
+	      _extends({}, this.props, {
+	        role: 'toolbar',
+	        className: _classnames2['default'](this.props.className, classes)
+	      }),
+	      this.props.children
+	    );
+	  }
+	});
+
+	exports['default'] = ButtonToolbar;
+	module.exports = exports['default'];
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+
+	var TradeStore = React.createClass({
+	    displayName: 'TradeStore',
+
+	    render: function render() {
+	        return React.createElement(
+	            'h1',
+	            null,
+	            'Trade'
+	        );
+	    }
+	});
+
+	module.exports = TradeStore;
 
 /***/ }
 /******/ ]);

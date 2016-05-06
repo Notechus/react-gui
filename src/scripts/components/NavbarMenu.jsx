@@ -5,17 +5,21 @@ var Navbar = require('react-bootstrap/lib/Navbar');
 var Avatar = require('./Avatar');
 
 const NavbarMenu = React.createClass({
+    changePageView: function (eventKey, event) {
+        console.log("View changed to: " + eventKey);
+        this.props.handleViews(eventKey);
+    },
     render: function () {
         return (<Navbar inverse fluid>
             <Navbar.Header>
                 <Navbar.Brand>
-                    <a href="#" id="brand-name">Trade Application</a>
+                    <a id="brand-name">Trade Application</a>
                 </Navbar.Brand>
             </Navbar.Header>
             <Nav>
-                <NavItem eventKey={1} href="#">Portfolio</NavItem>
-                <NavItem eventKey={2} href="#">Market Data</NavItem>
-                <NavItem eventKey={3} href="#">Trade Store</NavItem>
+                <NavItem eventKey={1} onSelect={this.changePageView} href="#">Portfolio</NavItem>
+                <NavItem eventKey={2} onSelect={this.changePageView} href="#">Market Data</NavItem>
+                <NavItem eventKey={3} onSelect={this.changePageView} href="#">Trade Store</NavItem>
             </Nav>
             <Nav pullRight>
                 <Navbar.Text>You are logged as: <strong>Trader</strong> </Navbar.Text>

@@ -1,16 +1,22 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Col = require('react-bootstrap/lib/Col');
-var NavbarMenu = require('./NavbarMenu');
-var StatusPanel = require('./StatusPanel');
-var ClockPanel = require('./ClockPanel');
-var MainBody = require('./MainBody');
+var NavbarMenu = require('./components/NavbarMenu');
+var StatusPanel = require('./components/StatusPanel');
+var ClockPanel = require('./components/ClockPanel');
+var MainBody = require('./components/MainBody');
 
 var App = React.createClass({
+    handleViews: function (key) {
+        if (this.state.view != key) this.setState({view: key});
+    },
+    getInitialState: function () {
+        return {view: 1};
+    },
     render: function () {
         return (<div>
-            <NavbarMenu/>
-            <MainBody/>
+            <NavbarMenu handleViews={this.handleViews}/>
+            <MainBody view={this.state.view}/>
             <ClockPanel/>
             <StatusPanel/>
         </div>);

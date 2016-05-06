@@ -43,7 +43,7 @@ body {
     position: absolute;
     padding: 10px;
     width: 25%;
-    height: 25%;
+    height: 35%;
     right: 5px;
     background-color: whitesmoke;
     border-radius: 5px;
@@ -55,7 +55,7 @@ body {
     width: 25%;
     height: 25%;
     right: 5px;
-    bottom: 5px;
+    bottom: 11px;
     background-color: whitesmoke;
     border-radius: 5px;
 }
@@ -84,8 +84,8 @@ body {
     position: absolute;
     width: 46%;
     height: 46%;
-    /*background-color: #80d4ea;*/
-    background-color: #eee;
+    /*background-color: #eee;*/
+    background-color: lightgray;
     border-radius: 3px;
     padding: 5px;
     border-top: 1px solid #ddd;
