@@ -25218,42 +25218,79 @@
 	var React = __webpack_require__(1);
 	var ButtonToolbar = __webpack_require__(250);
 	var Button = __webpack_require__(239);
+	var Glyphicon = __webpack_require__(240);
 
 	var ActualStockHistory = React.createClass({
 	    displayName: 'ActualStockHistory',
 
 	    getInitialState: function getInitialState() {
-	        return { stockData: [] };
+	        return { stockData: [], chartStockData: [] };
+	    },
+	    handleMessage: function handleMessage(event) {
+	        var tmp = JSON.parse(event.data);
+	        console.log(tmp);
+	        var tmpStock = this.state.stockData;
+	        var exists = false;
+	        var index = 0;
+	        for (var i = 0; i < tmpStock.length; i++) {
+	            if (tmpStock[i].Name === tmp.Name) {
+	                index = i;
+	                exists = true;
+	                // tmpStock[tmp.Name].OldPrice = tmp.OldPrice;
+	                // tmpStock[tmp.Name].Price = tmp.Price;
+	                break;
+	            }
+	        }
+	        if (exists) {
+	            console.log("it exists: " + tmp);
+	            tmpStock[i] = tmp;
+	        } else {
+	            console.log("it doesnt exist");
+	            tmpStock.push(tmp);
+	        }
+	        this.setState({ stockData: tmpStock });
+	    },
+	    componentDidMount: function componentDidMount() {
+	        var ws = new WebSocket("ws://karnicki.pl/api/WSChat");
+	        ws.onmessage = this.handleMessage;
 	    },
 	    render: function render() {
+	        var stocks = this.state.stockData.map(function (elem) {
+	            var delta = elem.Price - elem.OldPrice;
+	            if (delta > 0) {
+	                return React.createElement(
+	                    Button,
+	                    { bsSize: 'large', bsStyle: 'success' },
+	                    elem.Name,
+	                    React.createElement('br', null),
+	                    parseFloat(elem.Price).toFixed(2),
+	                    ' ',
+	                    React.createElement(Glyphicon, { glyph: 'arrow-up' })
+	                );
+	            } else if (delta < 0) {
+	                return React.createElement(
+	                    Button,
+	                    { bsSize: 'large', bsStyle: 'danger' },
+	                    elem.Name,
+	                    React.createElement('br', null),
+	                    parseFloat(elem.Price).toFixed(2),
+	                    ' ',
+	                    React.createElement(Glyphicon, { glyph: 'arrow-down' })
+	                );
+	            } else {
+	                return React.createElement(
+	                    Button,
+	                    { bsSize: 'large', bsStyle: 'primary' },
+	                    elem.Name,
+	                    React.createElement('br', null),
+	                    parseFloat(elem.Price).toFixed(2)
+	                );
+	            }
+	        });
 	        return React.createElement(
 	            ButtonToolbar,
 	            null,
-	            React.createElement(
-	                Button,
-	                { bsSize: 'large', bsStyle: 'primary' },
-	                'Primary'
-	            ),
-	            React.createElement(
-	                Button,
-	                { bsSize: 'large', bsStyle: 'success' },
-	                'Success'
-	            ),
-	            React.createElement(
-	                Button,
-	                { bsSize: 'large', bsStyle: 'info' },
-	                'Info'
-	            ),
-	            React.createElement(
-	                Button,
-	                { bsSize: 'large', bsStyle: 'warning' },
-	                'Warning'
-	            ),
-	            React.createElement(
-	                Button,
-	                { bsSize: 'large', bsStyle: 'danger' },
-	                'Danger'
-	            )
+	            stocks
 	        );
 	    }
 	});
