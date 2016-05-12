@@ -1,6 +1,5 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Col = require('react-bootstrap/lib/Col');
 var NavbarMenu = require('./components/NavbarMenu');
 var StatusPanel = require('./components/StatusPanel');
 var ClockPanel = require('./components/ClockPanel');

@@ -1,56 +1,69 @@
 var React = require('react');
-var ButtonToolbar = require('react-bootstrap/lib/ButtonToolbar');
-var Button = require('react-bootstrap/lib/Button');
-var Glyphicon = require('react-bootstrap/lib/Glyphicon');
+var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
+var Button = require('react-bootstrap').Button;
+var Glyphicon = require('react-bootstrap').Glyphicon;
+//var MarketStore = require('../stores/MarketStore');
+var MarketStore = require('../stores/MarketDataStore');
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+
+function getStateFromStore() {
+    return {
+        data: MarketStore.getAll()
+    }
+}
 
 var ActualStockHistory = React.createClass({
         getInitialState: function () {
-            return ({stockData: [], chartStockData: [], webSock: null});
+            return getStateFromStore();
+        },
+        onChange: function () {
+            this.setState(getStateFromStore());
         },
         handleMessage: function (event) {
             var tmp = JSON.parse(event.data);
-            var tmpStock = this.state.stockData;
-            var exists = false;
-            var index = 0;
-            for (var i = 0; i < tmpStock.length; i++) {
-                if (tmpStock[i].Name === tmp.Name) {
-                    index = i;
-                    exists = true;
-                    break;
-                }
-            }
-            if (exists) {
-                tmpStock[i] = tmp;
-            } else {
-                tmpStock.push(tmp);
-            }
-            this.setState({stockData: tmpStock});
+            AppDispatcher.dispatch({
+                actionType: 'new-market-change',
+                data: tmp
+            });
         },
         componentDidMount: function () {
             var ws = new WebSocket("ws://karnicki.pl/api/WSChat");
             this.state.webSock = ws;
             ws.onmessage = this.handleMessage;
+            MarketStore.addChangeListener(this.onChange);
         },
         componentWillUnmount: function () {
             this.state.webSock.close();
+            MarketStore.removeChangeListener(this.onChange);
         },
         render: function () {
-            var stocks = this.state.stockData.map(function (elem) {
-                var delta = elem.Price - elem.OldPrice;
+            var stocks = [];
+            for (var i in this.state.data) { // myślę, że to trochę hakerka, ale nie byłem w stanie nic wymyśleć
+                var item = this.state.data[i];
+                var delta = item.price - item.oldPrice;
+                console.log("id " + item.name + " delta " + delta);
                 if (delta > 0) {
-                    return (<Button bsSize="large" bsStyle='success'>
-                        {elem.Name}<br/>{parseFloat(elem.Price).toFixed(2)}&nbsp;<Glyphicon glyph="arrow-up"></Glyphicon>
-                    </Button>);
+                    stocks.push(
+                        <Button bsSize="large" bsStyle='success'>
+                            {item.name}<br/>{parseFloat(item.price).toFixed(2)}&nbsp;
+                            <Glyphicon glyph="arrow-up"></Glyphicon>
+                        </Button>
+                    );
                 } else if (delta < 0) {
-                    return (<Button bsSize="large" bsStyle='danger'>
-                        {elem.Name}<br/>{parseFloat(elem.Price).toFixed(2)}&nbsp;<Glyphicon glyph="arrow-down"></Glyphicon>
-                    </Button>);
+                    stocks.push(
+                        <Button bsSize="large" bsStyle='danger'>
+                            {item.name}<br/>{parseFloat(item.price).toFixed(2)}&nbsp;
+                            <Glyphicon glyph="arrow-down"></Glyphicon>
+                        </Button>
+                    );
                 } else {
-                    return (<Button bsSize="large" bsStyle="primary">
-                        {elem.Name}<br/>{parseFloat(elem.Price).toFixed(2)}
-                    </Button>);
+                    stocks.push(
+                        <Button bsSize="large" bsStyle='primary'>
+                            {item.name}<br/>{parseFloat(item.price).toFixed(2)}&nbsp;
+                        </Button>
+                    );
                 }
-            });
+            }
             return (
                 <ButtonToolbar>
                     {stocks}
