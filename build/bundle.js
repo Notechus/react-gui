@@ -24676,7 +24676,7 @@
 	var PageHeader = __webpack_require__(245);
 	var PortfolioTable = __webpack_require__(246);
 	var MarketHistory = __webpack_require__(248);
-	var TradeStore = __webpack_require__(444);
+	var TradeStore = __webpack_require__(446);
 
 	var MainBody = React.createClass({
 	    displayName: 'MainBody',
@@ -25003,9 +25003,9 @@
 	var ButtonToolbar = __webpack_require__(249).ButtonToolbar;
 	var Button = __webpack_require__(249).Button;
 	var Glyphicon = __webpack_require__(249).Glyphicon;
-	//var MarketStore = require('../stores/MarketStore');
-	var MarketStore = __webpack_require__(438);
-	var AppDispatcher = __webpack_require__(439);
+	var ActionTypes = __webpack_require__(438);
+	var MarketStore = __webpack_require__(440);
+	var AppDispatcher = __webpack_require__(441);
 
 	function getStateFromStore() {
 	    return {
@@ -25025,7 +25025,7 @@
 	    handleMessage: function handleMessage(event) {
 	        var tmp = JSON.parse(event.data);
 	        AppDispatcher.dispatch({
-	            actionType: 'new-item',
+	            actionType: ActionTypes.MARKET_NEW_CHANGE,
 	            data: tmp
 	        });
 	    },
@@ -25033,36 +25033,16 @@
 	        var ws = new WebSocket("ws://karnicki.pl/api/WSChat");
 	        this.state.webSock = ws;
 	        ws.onmessage = this.handleMessage;
-	        //MarketStore.bind('change', this.onChange);
 	        MarketStore.addChangeListener(this.onChange);
 	    },
 	    componentWillUnmount: function componentWillUnmount() {
 	        this.state.webSock.close();
-	        //MarketStore.unbind('change', this.onChange);
 	        MarketStore.removeChangeListener(this.onChange);
 	    },
 	    render: function render() {
-	        /*var stocks = this.state.data.map(function (elem) {
-	         var delta = elem.Price - elem.OldPrice;
-	         if (delta > 0) {
-	         return (<Button bsSize="large" bsStyle='success'>
-	         {elem.Name}<br/>{parseFloat(elem.Price).toFixed(2)}&nbsp;<Glyphicon glyph="arrow-up"></Glyphicon>
-	         </Button>);
-	         } else if (delta < 0) {
-	         return (<Button bsSize="large" bsStyle='danger'>
-	         {elem.Name}<br/>{parseFloat(elem.Price).toFixed(2)}&nbsp;<Glyphicon glyph="arrow-down"></Glyphicon>
-	         </Button>);
-	         } else {
-	         return (<Button bsSize="large" bsStyle="primary">
-	         {elem.Name}<br/>{parseFloat(elem.Price).toFixed(2)}
-	         </Button>);
-	         }
-	         });*/
 	        var stocks = [];
-	        Object.keys(this.state.data).forEach(function (key) {
-	            console.log(key);
-	        });
 	        for (var i in this.state.data) {
+	            // myślę, że to trochę hakerka, ale nie byłem w stanie nic wymyśleć
 	            var item = this.state.data[i];
 	            var delta = item.price - item.oldPrice;
 	            console.log("id " + item.name + " delta " + delta);
@@ -39896,12 +39876,88 @@
 
 	'use strict';
 
-	var AppDispatcher = __webpack_require__(439);
-	var EventEmitter = __webpack_require__(443).EventEmitter;
+	var keyMirror = __webpack_require__(439);
+
+	module.exports = {
+
+	    ActionTypes: keyMirror({
+	        MARKET_NEW_CHANGE: null,
+	        PORTFOLIO_NEW_ITEM: null
+	    })
+
+	};
+
+/***/ },
+/* 439 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2014 Facebook, Inc.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+
+	"use strict";
+
+	/**
+	 * Constructs an enumeration with keys equal to their value.
+	 *
+	 * For example:
+	 *
+	 *   var COLORS = keyMirror({blue: null, red: null});
+	 *   var myColor = COLORS.blue;
+	 *   var isColorValid = !!COLORS[myColor];
+	 *
+	 * The last line could not be performed if the values of the generated enum were
+	 * not equal to their keys.
+	 *
+	 *   Input:  {key1: val1, key2: val2}
+	 *   Output: {key1: key1, key2: key2}
+	 *
+	 * @param {object} obj
+	 * @return {object}
+	 */
+	var keyMirror = function(obj) {
+	  var ret = {};
+	  var key;
+	  if (!(obj instanceof Object && !Array.isArray(obj))) {
+	    throw new Error('keyMirror(...): Argument must be an object.');
+	  }
+	  for (key in obj) {
+	    if (!obj.hasOwnProperty(key)) {
+	      continue;
+	    }
+	    ret[key] = key;
+	  }
+	  return ret;
+	};
+
+	module.exports = keyMirror;
+
+
+/***/ },
+/* 440 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(441);
+	var EventEmitter = __webpack_require__(445).EventEmitter;
+	var ActionTypes = __webpack_require__(438);
 	var assign = __webpack_require__(4);
 
 	var MarketDataStore = assign({}, EventEmitter.prototype, {
-	    //marketData: [],
 	    marketData: {},
 	    emitChange: function emitChange() {
 	        this.emit('change');
@@ -39917,35 +39973,19 @@
 	    },
 	    add: function add(item) {
 	        var id = item.Name;
-	        this.marketData[id] = { timestamp: item.TimestampUtc, name: item.Name, price: item.Price, oldPrice: item.OldPrice };
-	        /*var tmp = {
-	         id: id,
-	         name: item.Name,
-	         price: item.Price,
-	         oldPrice: item.OldPrice
-	         };
-	         console.log("tmp " + tmp.name);
-	         var exists = false;
-	         var index = 0;
-	         for (var i = 0; i < this.marketData.length; ++i) {
-	         if (this.marketData[i].name === tmp.name) {
-	         index = i;
-	         exists = true;
-	         break;
-	         }
-	         }
-	         if (exists) {
-	         this.marketData[i] = tmp;
-	         } else {
-	         this.marketData.push(tmp);
-	         }*/
+	        this.marketData[id] = {
+	            timestamp: item.TimestampUtc,
+	            name: item.Name,
+	            price: item.Price,
+	            oldPrice: item.OldPrice
+	        };
 	    }
 	});
 
 	AppDispatcher.register(function (action) {
 	    switch (action.actionType) {
-	        case "new-item":
-	            MarketDataStore.add(action.data); // reachable
+	        case ActionTypes.MARKET_NEW_CHANGE:
+	            MarketDataStore.add(action.data);
 	            MarketDataStore.emitChange();
 	            break;
 	        default:
@@ -39955,18 +39995,18 @@
 	module.exports = MarketDataStore;
 
 /***/ },
-/* 439 */
+/* 441 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Dispatcher = __webpack_require__(440).Dispatcher;
+	var Dispatcher = __webpack_require__(442).Dispatcher;
 	//var AppDispatcher = new Dispatcher();
 
 	module.exports = new Dispatcher();
 
 /***/ },
-/* 440 */
+/* 442 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -39978,11 +40018,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Dispatcher = __webpack_require__(441);
+	module.exports.Dispatcher = __webpack_require__(443);
 
 
 /***/ },
-/* 441 */
+/* 443 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -40004,7 +40044,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(442);
+	var invariant = __webpack_require__(444);
 
 	var _prefix = 'ID_';
 
@@ -40219,7 +40259,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 442 */
+/* 444 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -40274,7 +40314,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 443 */
+/* 445 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -40578,7 +40618,7 @@
 
 
 /***/ },
-/* 444 */
+/* 446 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

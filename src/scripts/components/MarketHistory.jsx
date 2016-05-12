@@ -2,7 +2,7 @@ var React = require('react');
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 var Button = require('react-bootstrap').Button;
 var Glyphicon = require('react-bootstrap').Glyphicon;
-//var MarketStore = require('../stores/MarketStore');
+var ActionTypes = require('../constants/ActionConstants');
 var MarketStore = require('../stores/MarketDataStore');
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 
@@ -22,7 +22,7 @@ var ActualStockHistory = React.createClass({
         handleMessage: function (event) {
             var tmp = JSON.parse(event.data);
             AppDispatcher.dispatch({
-                actionType: 'new-market-change',
+                actionType: ActionTypes.MARKET_NEW_CHANGE,
                 data: tmp
             });
         },

@@ -3,8 +3,8 @@ var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/ActionConstants');
 var assign = require('object-assign');
 
-var MarketDataStore = assign({}, EventEmitter.prototype, {
-    marketData: {},
+var TradeFormStore = assign({}, EventEmitter.prototype, {
+    forms: {}, // id: 1 - create_opt, 2 - trade_opt, 3 - trade_stock, 4 - details
     emitChange: function () {
         this.emit('change');
     },
@@ -15,27 +15,21 @@ var MarketDataStore = assign({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
     getAll: function () {
-        return this.marketData;
+        return this.forms;
     },
     add: function (item) {
-        var id = item.Name;
-        this.marketData[id] = {
-            timestamp: item.TimestampUtc,
-            name: item.Name,
-            price: item.Price,
-            oldPrice: item.OldPrice
-        };
+        var id = item.Id;
+        
     }
 });
 
 AppDispatcher.register(function (action) {
     switch (action.actionType) {
-        case ActionTypes.MARKET_NEW_CHANGE:
-            MarketDataStore.add(action.data);
-            MarketDataStore.emitChange();
+        case ActionTypes.TRADE_NEW_ITEM:
+            TradeFormStore.emitChange();
             break;
         default:
     }
 });
 
-module.exports = MarketDataStore;
+module.exports = TradeFormStore;

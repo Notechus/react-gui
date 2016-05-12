@@ -3,8 +3,14 @@ var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/ActionConstants');
 var assign = require('object-assign');
 
-var MarketDataStore = assign({}, EventEmitter.prototype, {
-    marketData: {},
+/*
+ * (#, Underlying, Quantity) dla stock
+ * (#, ID, Underlying, Direction, Maturity, Price) dla opcji
+ * (#, ID, Underlying, Quantity) również dla opcji( chcemy widzieć tylko quantity)
+ * (#, ID, Underlying, Notional) chcemy tylko zsumowany notional
+ */
+var PortfolioStore = assign({}, EventEmitter.prototype, {
+    portfolio: {},
     emitChange: function () {
         this.emit('change');
     },
@@ -15,27 +21,20 @@ var MarketDataStore = assign({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
     getAll: function () {
-        return this.marketData;
+        return this.portfolio;
     },
     add: function (item) {
         var id = item.Name;
-        this.marketData[id] = {
-            timestamp: item.TimestampUtc,
-            name: item.Name,
-            price: item.Price,
-            oldPrice: item.OldPrice
-        };
     }
 });
 
 AppDispatcher.register(function (action) {
     switch (action.actionType) {
-        case ActionTypes.MARKET_NEW_CHANGE:
-            MarketDataStore.add(action.data);
-            MarketDataStore.emitChange();
+        case ActionTypes.PORTFOLIO_NEW_ITEM:
+            PortfolioStore.emitChange();
             break;
         default:
     }
 });
 
-module.exports = MarketDataStore;
+module.exports = PortfolioStore;
