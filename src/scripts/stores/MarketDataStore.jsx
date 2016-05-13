@@ -17,6 +17,13 @@ var MarketDataStore = assign({}, EventEmitter.prototype, {
     getAll: function () {
         return this.marketData;
     },
+    getAllUnderlyings: function () {
+        var underlyings = [];
+        Object.keys(this.marketData).forEach(function (key) {
+            underlyings.push(key);
+        });
+        return underlyings;
+    },
     add: function (item) {
         var id = item.Name;
         this.marketData[id] = {

@@ -38,10 +38,9 @@ var ActualStockHistory = React.createClass({
         },
         render: function () {
             var stocks = [];
-            for (var i in this.state.data) { // myślę, że to trochę hakerka, ale nie byłem w stanie nic wymyśleć
+            for (var i in this.state.data) { // it's a hack obv, but I couldn't get anything more atm
                 var item = this.state.data[i];
                 var delta = item.price - item.oldPrice;
-                console.log("id " + item.name + " delta " + delta);
                 if (delta > 0) {
                     stocks.push(
                         <Button bsSize="large" bsStyle='success'>

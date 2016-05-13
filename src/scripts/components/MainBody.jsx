@@ -1,5 +1,5 @@
 var React = require('react');
-var PageHeader = require('react-bootstrap/lib/PageHeader');
+var PageHeader = require('react-bootstrap').PageHeader;
 var PortfolioTable = require('./PortfolioTable');
 var MarketHistory = require('./MarketHistory');
 var TradeStore = require('./TradeStore');

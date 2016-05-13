@@ -63,15 +63,28 @@ body {
 .statusPanel {
     position: absolute;
     padding: 10px;
-    top: 10px;
 }
 
 .pvPanel {
     left: 10px;
+    top: 10px;
 }
 
 .deltaPanel {
-    left: 25%;
+    left: 10px;
+    top: 50%;
+}
+
+.detailsPanel {
+    position: absolute;
+    width: 55%;
+    height: 90%;
+    border: 1px outset white;
+    border-radius: 3px;
+    top: 10px;
+    right: 10px;
+    padding-left: 15px;
+    padding-top: 10px;
 }
 
 .clock {
@@ -137,6 +150,10 @@ body {
 
 .createOption {
     left: 10px;
+}
+
+.createOptionForm {
+    top: 10px;
 }
 
 .tradeOption {

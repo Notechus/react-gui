@@ -1,5 +1,5 @@
 var React = require('react');
-var Table = require('react-bootstrap/lib/Table');
+var Table = require('react-bootstrap').Table;
 
 var PortfolioTable = React.createClass({
     render: function () {

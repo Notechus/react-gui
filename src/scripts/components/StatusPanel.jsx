@@ -1,7 +1,7 @@
 var React = require('react');
-var Panel = require('react-bootstrap/lib/Panel');
-var Button = require('react-bootstrap/lib/Button');
-var Glyphicon = require('react-bootstrap/lib/Glyphicon');
+var Button = require('react-bootstrap').Button;
+var Glyphicon = require('react-bootstrap').Glyphicon;
+var DetailsPanel = require('./DetailsPanel');
 
 var CustomPanel = React.createClass({
     getInitialState: function () {
@@ -35,7 +35,7 @@ var CustomPanel = React.createClass({
         }
     }
 });
-//TODO: add details panel
+
 var StatusPanel = React.createClass({
     handleStatus: function () {
 
@@ -49,6 +49,9 @@ var StatusPanel = React.createClass({
                 <div className="statusPanel deltaPanel">
                     < CustomPanel name="Delta" initialValue={-1.5}/>
                 </div >
+                <div>
+                    <DetailsPanel/>
+                </div>
             </div>
         );
     }

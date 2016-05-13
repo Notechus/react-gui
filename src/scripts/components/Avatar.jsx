@@ -1,7 +1,7 @@
 var React = require('react');
-var Thumbnail = require('react-bootstrap/lib/Thumbnail');
-var Button = require('react-bootstrap/lib/Button');
-var Glyphicon = require('react-bootstrap/lib/Glyphicon');
+var Thumbnail = require('react-bootstrap').Thumbnail;
+var Button = require('react-bootstrap').Button;
+var Glyphicon = require('react-bootstrap').Glyphicon;
 
 var Avatar = React.createClass({
     render: function () {

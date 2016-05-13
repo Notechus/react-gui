@@ -1,7 +1,7 @@
 var React = require('react');
-var Nav = require('react-bootstrap/lib/Nav');
-var NavItem = require('react-bootstrap/lib/NavItem');
-var Navbar = require('react-bootstrap/lib/Navbar');
+var Nav = require('react-bootstrap').Nav;
+var NavItem = require('react-bootstrap').NavItem;
+var Navbar = require('react-bootstrap').Navbar;
 var Avatar = require('./Avatar');
 
 const NavbarMenu = React.createClass({
