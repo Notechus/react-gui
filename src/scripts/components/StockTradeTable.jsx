@@ -1,17 +1,22 @@
 var React = require('react');
 var Table = require('react-bootstrap').Table;
+var PortfolioStore = require('../stores/PortfolioStore');
 
-var PortfolioTable = React.createClass({
+function getStockTradesFromStore() {
+    return PortfolioStore.getAllStock();
+}
+
+var StockTradeTable = React.createClass({
+    getInitialState: function () {
+        return {stockTrades: getStockTradesFromStore()};
+    },
     render: function () {
         return (<Table responsive>
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>ID</th>
                     <th>Underlying</th>
-                    <th>Direction</th>
-                    <th>Maturity</th>
-                    <th>Price</th>
+                    <th>Quantity</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -19,23 +24,14 @@ var PortfolioTable = React.createClass({
                     <td>1</td>
                     <td>Table cell</td>
                     <td>Table cell</td>
-                    <td>Table cell</td>
-                    <td>Table cell</td>
-                    <td>Table cell</td>
                 </tr>
                 <tr>
                     <td>2</td>
                     <td>Table cell</td>
                     <td>Table cell</td>
-                    <td>Table cell</td>
-                    <td>Table cell</td>
-                    <td>Table cell</td>
                 </tr>
                 <tr>
                     <td>3</td>
-                    <td>Table cell</td>
-                    <td>Table cell</td>
-                    <td>Table cell</td>
                     <td>Table cell</td>
                     <td>Table cell</td>
                 </tr>
@@ -45,4 +41,4 @@ var PortfolioTable = React.createClass({
     }
 });
 
-module.exports = PortfolioTable;
+module.exports = StockTradeTable;

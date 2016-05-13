@@ -5,29 +5,16 @@ var FormGroup = require('react-bootstrap').FormGroup;
 var ControlLabel = require('react-bootstrap').ControlLabel;
 var Button = require('react-bootstrap').Button;
 var Col = require('react-bootstrap').Col;
-var MarketStore = require('../stores/MarketDataStore');
-var AppDispatcher = require('../dispatcher/AppDispatcher');
 
-function getUnderlyingFromStore(id) {
-    return MarketStore.getUnderlying(id);
-}
 
-var TradeOptionForm = React.createClass({
+var TradeStockForm = React.createClass({
     getInitialState: function () {
         return {
-            id: '',
             underlying: '',
             quantity: 0,
             submited: false
         };
-    },
-    onMarketDataChange: function () {
-        this.setState(getUnderlyingFromStore(this.state.id));
-    },
-    handleID: function (e) {
-        this.setState({id: e.target.value});
-    },
-    handleUnderlying: function (e) {
+    }, handleUnderlying: function (e) {
         this.setState({underlying: e.target.value});
     },
     handleQuantity: function (e) {
@@ -39,14 +26,6 @@ var TradeOptionForm = React.createClass({
     render: function () {
         return (
             <Form horizontal className="tradeOptionForm">
-                <FormGroup controlId="formID">
-                    <Col componentClass={ControlLabel} sm={2}>
-                        Option ID
-                    </Col>
-                    <Col sm={4}>
-                        <FormControl type="text" onChange={this.handleID}/>
-                    </Col>
-                </FormGroup>
                 <FormGroup controlId="formUnderlying">
                     <Col componentClass={ControlLabel} sm={2}>
                         Underlying
@@ -73,4 +52,4 @@ var TradeOptionForm = React.createClass({
     }
 });
 
-module.exports = TradeOptionForm;
+module.exports = TradeStockForm;

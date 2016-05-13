@@ -1,10 +1,10 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
-var ActionTypes = require('../constants/ActionConstants');
 var assign = require('object-assign');
 
 var MarketDataStore = assign({}, EventEmitter.prototype, {
     marketData: {},
+    chartMarketData: {},
     emitChange: function () {
         this.emit('change');
     },
@@ -32,16 +32,21 @@ var MarketDataStore = assign({}, EventEmitter.prototype, {
             price: item.Price,
             oldPrice: item.OldPrice
         };
+        this.chartMarketData[item.TimestampUtc] = {
+            timestamp: item.TimestampUtc,
+            name: item.Name,
+            price: item.Price,
+            oldPrice: item.OldPrice
+        };
     }
 });
 
 AppDispatcher.register(function (action) {
     switch (action.actionType) {
-        case ActionTypes.MARKET_NEW_CHANGE:
+        case 'MARKET_NEW_CHANGE':
             MarketDataStore.add(action.data);
             MarketDataStore.emitChange();
             break;
-        default:
     }
 });
 

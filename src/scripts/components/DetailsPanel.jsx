@@ -1,18 +1,36 @@
 var React = require('react');
 var Label = require('react-bootstrap').Label;
+var DetailsStore = require('../stores/DetailsStore');
+
+function getDetailsFromStore() {
+    return {details: DetailsStore.getAll()};
+}
 
 var DetailsPanel = React.createClass({
+    getInitialState: function () {
+        return getDetailsFromStore();
+    },
+    onDetailChange: function () {
+        this.setState(getDetailsFromStore());
+    },
+    componentDidMount: function () {
+        DetailsStore.addChangeListener(this.onDetailChange);
+    },
+    componentWillUnmount: function () {
+        DetailsStore.removeChangeListener(this.onDetailChange);
+    },
     render: function () {
+        var details = [];
+        var self = this;
+        Object.keys(self.state.details).forEach(function (key) {
+            details.push(<p><strong>{key}:{' '}</strong>{self.state.details[key]}</p>);
+        });
         return (
             <div className="detailsPanel">
                 <Label>Details</Label>
-                <p>&nbsp;</p>
-                <p><strong>ID:</strong> 56487cc0d89fffa1384a855c</p>
-                <p><strong>Underlying:</strong> GOOG</p>
-                <p><strong>Direction:</strong> PUT</p>
-                <p><strong>Maturity:</strong> 01/06/2016</p>
-                <p><strong>Price:</strong> 104.98 USD</p>
-            </div>);
+                {details}
+            </div>
+        );
     }
 });
 

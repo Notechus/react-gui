@@ -1,6 +1,6 @@
 var React = require('react');
 var PageHeader = require('react-bootstrap').PageHeader;
-var PortfolioTable = require('./PortfolioTable');
+var PortfolioPage = require('./PortfolioPage');
 var MarketHistory = require('./MarketHistory');
 var TradeStore = require('./TradeStore');
 
@@ -11,7 +11,7 @@ var MainBody = React.createClass({
                     return (
                         <div className="container" id="mainBody">
                             <PageHeader> Portfolio</PageHeader>
-                            <PortfolioTable/>
+                            <PortfolioPage/>
                         </div>
                     );
                 case 2:

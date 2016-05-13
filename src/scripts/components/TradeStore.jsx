@@ -1,8 +1,9 @@
 var React = require('react');
 var Label = require('react-bootstrap').Label;
 var CreateOptionForm = require('./CreateOptionForm');
+var TradeOptionForm = require('./TradeOptionForm');
+var TradeStockForm = require('./TradeStockForm');
 
-//TODO: add forms
 var TradeStore = React.createClass({
     render: function () {
         return (
@@ -13,9 +14,11 @@ var TradeStore = React.createClass({
                 </div>
                 <div className="tradeStoreDefaults tradeOption">
                     <Label>Trade Option</Label>
+                    <TradeOptionForm/>
                 </div>
                 <div className="tradeStoreDefaults tradeStock">
                     <Label>Trade Stock</Label>
+                    <TradeStockForm/>
                 </div>
             </div>
         );

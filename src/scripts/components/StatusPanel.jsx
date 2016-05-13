@@ -15,14 +15,14 @@ var CustomPanel = React.createClass({
         if (delta > 0) {
             return (
                 <Button bsSize="large" bsStyle='success'>
-                    {this.props.name}<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
+                    &nbsp;{this.props.name}&nbsp;<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
                     <Glyphicon glyph="arrow-up"></Glyphicon>
                 </Button>
             );
         } else if (delta < 0) {
             return (
                 <Button bsSize="large" bsStyle='danger'>
-                    {this.props.name}<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
+                    &nbsp;{this.props.name}&nbsp;<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
                     <Glyphicon glyph="arrow-down"></Glyphicon>
                 </Button>
             );

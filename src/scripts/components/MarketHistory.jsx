@@ -2,9 +2,7 @@ var React = require('react');
 var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 var Button = require('react-bootstrap').Button;
 var Glyphicon = require('react-bootstrap').Glyphicon;
-var ActionTypes = require('../constants/ActionConstants');
 var MarketStore = require('../stores/MarketDataStore');
-var AppDispatcher = require('../dispatcher/AppDispatcher');
 
 function getStateFromStore() {
     return {
@@ -16,29 +14,18 @@ var ActualStockHistory = React.createClass({
         getInitialState: function () {
             return getStateFromStore();
         },
-        onChange: function () {
+        onMarketChange: function () {
             this.setState(getStateFromStore());
         },
-        handleMessage: function (event) {
-            var tmp = JSON.parse(event.data);
-            AppDispatcher.dispatch({
-                actionType: ActionTypes.MARKET_NEW_CHANGE,
-                data: tmp
-            });
-        },
         componentDidMount: function () {
-            var ws = new WebSocket("ws://karnicki.pl/api/WSChat");
-            this.state.webSock = ws;
-            ws.onmessage = this.handleMessage;
-            MarketStore.addChangeListener(this.onChange);
+            MarketStore.addChangeListener(this.onMarketChange);
         },
         componentWillUnmount: function () {
-            this.state.webSock.close();
-            MarketStore.removeChangeListener(this.onChange);
+            MarketStore.removeChangeListener(this.onMarketChange);
         },
         render: function () {
             var stocks = [];
-            for (var i in this.state.data) { // it's a hack obv, but I couldn't get anything more atm
+            for (var i in this.state.data) {
                 var item = this.state.data[i];
                 var delta = item.price - item.oldPrice;
                 if (delta > 0) {

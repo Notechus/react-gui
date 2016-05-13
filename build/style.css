@@ -165,3 +165,8 @@ body {
     bottom: 10px;
 }
 
+#popover {
+    left: 50px;
+    top: 30%;
+}
+

@@ -5,85 +5,120 @@ var FormGroup = require('react-bootstrap').FormGroup;
 var ControlLabel = require('react-bootstrap').ControlLabel;
 var Button = require('react-bootstrap').Button;
 var Glyphicon = require('react-bootstrap').Glyphicon;
+var Popover = require('react-bootstrap').Popover;
 var Datetime = require('react-datetime');
 var moment = require('moment');
 var Col = require('react-bootstrap').Col;
 var MarketStore = require('../stores/MarketDataStore');
-var TradeStore = require('../stores/TradeFormStore');
-var ActionTypes = require('../constants/ActionConstants');
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 
 function getUnderlyingsFromStore() {
     return MarketStore.getAllUnderlyings();
 }
-
+/*
+ var CustomPopover = React.createClass({
+ render: function () {
+ if (this.props.submited) {
+ return (
+ <div id="popover">
+ <Popover placement="right" title={this.props.title}>
+ You've created option successfully.
+ </Popover>
+ </div>);
+ } else {
+ return null;
+ }
+ }
+ });
+ */
 var CreateOptionForm = React.createClass({
     getInitialState: function () {
         return {
             underlying: '',
-            notional: '',
-            maturity: '',
+            notional: 0,
+            maturity: new Date(),
             direction: '',
-            optStrike: '',
+            optStrike: 0,
             submited: false,
             underlyings: getUnderlyingsFromStore()
         };
     },
-    onChange: function () {
+    onMarketDataChange: function () {
         this.setState(getUnderlyingsFromStore());
     },
     validateNotional: function () {
-        var x = this.state.notional;
+        const x = this.state.notional;
+        console.log('not ' + x);
         if (x >= 1000000 || x <= -1000000) return 'error';
         if (!Number.isInteger(x)) return 'error';
     },
     validateMaturity: function () {
         var mat = this.state.maturity;
+        console.log('mat ' + mat);
         if (moment().isAfter(mat)) return 'error';
     },
     validateStrike: function () {
         var x = this.state.optStrike;
+        console.log('str ' + x);
         if (isNaN(x)) return 'error';
     },
     handleUnderlying: function (e) {
+        /*AppDispatcher.dispatch({
+         actionType: 'DETAIL_UPDATE',
+         data: {Underlying: e.target.value}
+         });*/
         this.setState({underlying: e.target.value});
     },
     handleNotional: function (e) {
+        /*AppDispatcher.dispatch({
+         actionType: 'DETAIL_UPDATE',
+         data: {Notional: e.target.value}
+         });*/
         this.setState({notional: e.target.value});
     },
     handleMaturity: function (e) {
         this.setState({maturity: e});
+        /*AppDispatcher.dispatch({
+         actionType: 'DETAIL_UPDATE',
+         data: {Maturity: e}
+         });*/
     },
     handleDirection: function (e) {
+        /*AppDispatcher.dispatch({
+         actionType: 'DETAIL_UPDATE',
+         data: {Direction: e.target.value}
+         });*/
         this.setState({direction: e.target.value});
     },
     handleStrike: function (e) {
-        this.setState({optStrike: e.target.value}); // i parse - don't know how to validate from string yet
+        /*AppDispatcher.dispatch({
+         actionType: 'DETAIL_UPDATE',
+         data: {Strike: e.target.value}
+         });*/
+        this.setState({optStrike: e.target.value});
     },
     handleSubmit: function () {
         var tmp = {
-            id: 1,
             underlying: this.state.underlying,
-            notional: this.state.notional,
             maturity: this.state.maturity,
             direction: this.state.direction,
-            optStrike: this.state.optStrike
+            price: this.state.optStrike
         };
         AppDispatcher.dispatch({
-            actionType: ActionTypes.TRADE_NEW_OPTION,
+            actionType: 'PORTFOLIO_NEW_OPTION',
             data: tmp
         });
-        this.setState({submitted: true});
+        this.setState({submited: true});
     },
     componentDidMount: function () {
-        //MarketStore.addChangeListener(this.onChange);
+        MarketStore.addChangeListener(this.onMarketDataChange);
     },
     componentWillUnmount: function () {
-        //MarketStore.removeChangeListener(this.onChange);
+        MarketStore.removeChangeListener(this.onMarketDataChange);
     },
     render: function () {
         var options = this.state.underlyings.map(function (item) {
-            return (<option value="other">{item}</option>);
+            return (<option value={item}>{item}</option>);
         });
         return (
             <Form horizontal className="createOptionForm">
@@ -92,25 +127,28 @@ var CreateOptionForm = React.createClass({
                         Underlying
                     </Col>
                     <Col sm={4}>
-                        <FormControl componentClass="select" placeholder="select" onChange={this.handleUnderlying}>
+                        <FormControl componentClass="select" onChange={this.handleUnderlying}>
+                            <option value="">select</option>
                             {options}
                         </FormControl>
                     </Col>
                 </FormGroup>
-                <FormGroup controlId="formNotional" validationState={this.validateNotional()}>
+                <FormGroup controlId="formNotional">
                     <Col componentClass={ControlLabel} sm={2}>
                         Notional
                     </Col>
                     <Col sm={4}>
                         <FormControl type="text" onChange={this.handleNotional}/>
+                        <FormControl.Feedback/>
                     </Col>
                 </FormGroup>
-                <FormGroup controlId="formMaturity" validationState={this.validateMaturity()}>
+                <FormGroup controlId="formMaturity">
                     <Col componentClass={ControlLabel} sm={2}>
                         Maturity
                     </Col>
                     <Col sm={4}>
                         <Datetime onChange={this.handleMaturity}/>
+                        <FormControl.Feedback/>
                     </Col>
                 </FormGroup>
                 <FormGroup controlID="formDirection">
@@ -119,21 +157,22 @@ var CreateOptionForm = React.createClass({
                     </Col>
                     <Col sm={2}>
                         <FormControl componentClass="select" placeholder="select" onChange={this.handleDirection}>
-                            <option value="select">PUT</option>
-                            <option value="other">CALL</option>
+                            <option value="PUT">PUT</option>
+                            <option value="CALL">CALL</option>
                         </FormControl>
                     </Col>
                 </FormGroup>
-                <FormGroup controlId="formStrike" validationState={this.validateStrike()}>
+                <FormGroup controlId="formStrike">
                     <Col componentClass={ControlLabel} sm={2}>
                         Strike
                     </Col>
                     <Col sm={4}>
                         <FormControl type="text" onChange={this.handleStrike}/>
+                        <FormControl.Feedback/>
                     </Col>
                 </FormGroup>
                 <Col sm={2}>
-                    <Button type="submit" bsStyle="success" onClick={this.handleSubmit}>
+                    <Button type="button" bsStyle="success" onClick={this.handleSubmit}>
                         <Glyphicon glyph="plus"></Glyphicon>
                     </Button>
                 </Col>
