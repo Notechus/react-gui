@@ -54,6 +54,7 @@
 	var MainBody = __webpack_require__(442);
 	var AppDispatcher = __webpack_require__(436);
 	var WebSocket = __webpack_require__(564);
+	var PortfolioStore = __webpack_require__(445);
 
 	var App = React.createClass({
 	    displayName: 'App',
@@ -74,9 +75,7 @@
 	    componentDidMount: function componentDidMount() {
 	        WebSocket.init("karnicki.pl/api/WSChat");
 	        WebSocket.addMessageHandler(this.handleMessage);
-	        /*alert("Please look at:\n https://github.com/Notechus/react-gui\n\n" +
-	         "It contains newer version of UI, which may help\n in better understanding " +
-	         "some things I did here.");*/
+	        PortfolioStore.loadCreatedOptions("http://karnicki.pl/api/option?trader=defaultUsername&underlying=All");
 	    },
 	    render: function render() {
 	        return React.createElement(
@@ -40560,6 +40559,11 @@
 	    getAllOption: function getAllOption() {
 	        return this.tradeOptions;
 	    },
+	    getUnderlying: function getUnderlying(id) {
+	        console.log(id);
+	        console.log(this.createdOptions[id]);
+	        return this.createdOptions[id].underlying;
+	    },
 	    addCreatedOption: function addCreatedOption(item) {
 	        //(#, ID, Underlying, Direction, Maturity, Price)
 	        var id = this.guid();
@@ -40589,6 +40593,28 @@
 	            quantity: item.quantity
 	        };
 	        this.tradeStock.push(tmp);
+	    },
+	    loadCreatedOptions: function loadCreatedOptions(url, options) {
+	        var xrs = new XMLHttpRequest();
+	        xrs.open('GET', url, true);
+	        xrs.withCredentials = true;
+	        xrs.onreadystatechange = function (data) {
+	            console.log('option: ' + data);
+	        };
+	        xrs.send();
+	    },
+	    loadOptionTrade: function loadOptionTrade(url) {
+	        xrs = new XMLHttpRequest();
+	        xrs.open('GET', url, true);
+	        xrs.onreadystatechange = function (data) {
+	            console.log('otrade: ' + data);
+	        };
+	        xrs.send();
+	    },
+	    loadStockTrade: function loadStockTrade(url, options) {
+	        $.getJSON(url, function (data) {
+	            console.log('strade: ' + data);
+	        });
 	    }
 	});
 
@@ -41070,7 +41096,6 @@
 	var ControlLabel = __webpack_require__(167).ControlLabel;
 	var Button = __webpack_require__(167).Button;
 	var Glyphicon = __webpack_require__(167).Glyphicon;
-	var Popover = __webpack_require__(167).Popover;
 	var Datetime = __webpack_require__(452);
 	var moment = __webpack_require__(455);
 	var Col = __webpack_require__(167).Col;
@@ -41080,22 +41105,7 @@
 	function getUnderlyingsFromStore() {
 	    return MarketStore.getAllUnderlyings();
 	}
-	/*
-	 var CustomPopover = React.createClass({
-	 render: function () {
-	 if (this.props.submited) {
-	 return (
-	 <div id="popover">
-	 <Popover placement="right" title={this.props.title}>
-	 You've created option successfully.
-	 </Popover>
-	 </div>);
-	 } else {
-	 return null;
-	 }
-	 }
-	 });
-	 */
+
 	var CreateOptionForm = React.createClass({
 	    displayName: 'CreateOptionForm',
 
@@ -41130,38 +41140,18 @@
 	        if (isNaN(x)) return 'error';
 	    },
 	    handleUnderlying: function handleUnderlying(e) {
-	        /*AppDispatcher.dispatch({
-	         actionType: 'DETAIL_UPDATE',
-	         data: {Underlying: e.target.value}
-	         });*/
 	        this.setState({ underlying: e.target.value });
 	    },
 	    handleNotional: function handleNotional(e) {
-	        /*AppDispatcher.dispatch({
-	         actionType: 'DETAIL_UPDATE',
-	         data: {Notional: e.target.value}
-	         });*/
 	        this.setState({ notional: e.target.value });
 	    },
 	    handleMaturity: function handleMaturity(e) {
 	        this.setState({ maturity: e });
-	        /*AppDispatcher.dispatch({
-	         actionType: 'DETAIL_UPDATE',
-	         data: {Maturity: e}
-	         });*/
 	    },
 	    handleDirection: function handleDirection(e) {
-	        /*AppDispatcher.dispatch({
-	         actionType: 'DETAIL_UPDATE',
-	         data: {Direction: e.target.value}
-	         });*/
 	        this.setState({ direction: e.target.value });
 	    },
 	    handleStrike: function handleStrike(e) {
-	        /*AppDispatcher.dispatch({
-	         actionType: 'DETAIL_UPDATE',
-	         data: {Strike: e.target.value}
-	         });*/
 	        this.setState({ optStrike: e.target.value });
 	    },
 	    handleSubmit: function handleSubmit() {
@@ -41199,12 +41189,12 @@
 	                { controlId: 'formUnderlying' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Underlying'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(
 	                        FormControl,
 	                        { componentClass: 'select', onChange: this.handleUnderlying },
@@ -41222,12 +41212,12 @@
 	                { controlId: 'formNotional' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Notional'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(FormControl, { type: 'text', onChange: this.handleNotional }),
 	                    React.createElement(FormControl.Feedback, null)
 	                )
@@ -41237,12 +41227,12 @@
 	                { controlId: 'formMaturity' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Maturity'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(Datetime, { onChange: this.handleMaturity }),
 	                    React.createElement(FormControl.Feedback, null)
 	                )
@@ -41252,12 +41242,12 @@
 	                { controlID: 'formDirection' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Direction'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 2 },
+	                    { sm: 5 },
 	                    React.createElement(
 	                        FormControl,
 	                        { componentClass: 'select', placeholder: 'select', onChange: this.handleDirection },
@@ -41279,19 +41269,19 @@
 	                { controlId: 'formStrike' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Strike'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(FormControl, { type: 'text', onChange: this.handleStrike }),
 	                    React.createElement(FormControl.Feedback, null)
 	                )
 	            ),
 	            React.createElement(
-	                Col,
-	                { sm: 2 },
+	                'div',
+	                { id: 'createdSubmitBtn' },
 	                React.createElement(
 	                    Button,
 	                    { type: 'button', bsStyle: 'success', onClick: this.handleSubmit },
@@ -56046,11 +56036,10 @@
 	var ControlLabel = __webpack_require__(167).ControlLabel;
 	var Button = __webpack_require__(167).Button;
 	var Col = __webpack_require__(167).Col;
-	var MarketStore = __webpack_require__(449);
-	var AppDispatcher = __webpack_require__(436);
+	var PortfolioStore = __webpack_require__(445);
 
 	function getUnderlyingFromStore(id) {
-	    return MarketStore.getUnderlying(id);
+	    return PortfolioStore.getUnderlying(id);
 	}
 
 	var TradeOptionForm = React.createClass({
@@ -56064,11 +56053,14 @@
 	            submited: false
 	        };
 	    },
-	    onMarketDataChange: function onMarketDataChange() {
-	        this.setState(getUnderlyingFromStore(this.state.id));
-	    },
 	    handleID: function handleID(e) {
 	        this.setState({ id: e.target.value });
+	        var x = getUnderlyingFromStore(e.target.value);
+	        if (typeof x == "undefined") {
+	            this.setState({ underlying: '' });
+	        } else {
+	            this.setState({ underlying: x });
+	        }
 	    },
 	    handleUnderlying: function handleUnderlying(e) {
 	        this.setState({ underlying: e.target.value });
@@ -56086,12 +56078,12 @@
 	                { controlId: 'formID' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Option ID'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(FormControl, { type: 'text', onChange: this.handleID })
 	                )
 	            ),
@@ -56100,13 +56092,18 @@
 	                { controlId: 'formUnderlying' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Underlying'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
-	                    React.createElement(FormControl, { type: 'text', onChange: this.handleUnderlying })
+	                    { sm: 5 },
+	                    React.createElement(
+	                        FormControl.Static,
+	                        {
+	                            onChange: this.handleUnderlying },
+	                        this.state.underlying
+	                    )
 	                )
 	            ),
 	            React.createElement(
@@ -56114,18 +56111,18 @@
 	                { controlId: 'formQuantity' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Quantity'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(FormControl, { type: 'text', onChange: this.handleQuantity })
 	                )
 	            ),
 	            React.createElement(
-	                Col,
-	                { sm: 2 },
+	                'div',
+	                { id: 'tradeSubmitBtn' },
 	                React.createElement(
 	                    Button,
 	                    { type: 'button', onClick: this.handleSubmit },
@@ -56177,12 +56174,12 @@
 	                { controlId: 'formUnderlying' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Underlying'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(FormControl, { type: 'text', onChange: this.handleUnderlying })
 	                )
 	            ),
@@ -56191,18 +56188,18 @@
 	                { controlId: 'formQuantity' },
 	                React.createElement(
 	                    Col,
-	                    { componentClass: ControlLabel, sm: 2 },
+	                    { componentClass: ControlLabel, sm: 3 },
 	                    'Quantity'
 	                ),
 	                React.createElement(
 	                    Col,
-	                    { sm: 4 },
+	                    { sm: 5 },
 	                    React.createElement(FormControl, { type: 'text', onChange: this.handleQuantity })
 	                )
 	            ),
 	            React.createElement(
-	                Col,
-	                { sm: 2 },
+	                'div',
+	                { id: 'stockSubmitBtn' },
 	                React.createElement(
 	                    Button,
 	                    { type: 'button', onClick: this.handleSubmit },

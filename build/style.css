@@ -170,3 +170,20 @@ body {
     top: 30%;
 }
 
+#stockSubmitBtn {
+    position: absolute;
+    left: 10%;
+    top: 40%;
+}
+
+#createdSubmitBtn {
+    position: absolute;
+    left: 10%;
+    top: 80%;
+}
+
+#tradeSubmitBtn {
+    position: absolute;
+    left: 10%;
+    top: 50%;
+}

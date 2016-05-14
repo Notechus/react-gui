@@ -33,6 +33,11 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
     getAllOption: function () {
         return this.tradeOptions;
     },
+    getUnderlying: function (id) {
+        console.log(id);
+        console.log(this.createdOptions[id]);
+        return this.createdOptions[id].underlying;
+    },
     addCreatedOption: function (item) {
         //(#, ID, Underlying, Direction, Maturity, Price)
         var id = this.guid();
@@ -52,7 +57,7 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
             id: id,
             underlying: item.underlying,
             quantity: item.quantity
-        }
+        };
         this.tradeOptions[id] = tmp;
     },
     addTradeStock: function (item) {
@@ -60,8 +65,30 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
         var tmp = {
             underlying: item.underlying,
             quantity: item.quantity
-        }
+        };
         this.tradeStock.push(tmp);
+    },
+    loadCreatedOptions: function (url, options) {
+        var xrs = new XMLHttpRequest();
+        xrs.open('GET', url, true);
+        xrs.withCredentials = true;
+        xrs.onreadystatechange = function (data) {
+            console.log('option: ' + data);
+        };
+        xrs.send();
+    },
+    loadOptionTrade: function (url) {
+        xrs = new XMLHttpRequest();
+        xrs.open('GET', url, true);
+        xrs.onreadystatechange = function (data) {
+            console.log('otrade: ' + data);
+        }
+        xrs.send();
+    },
+    loadStockTrade: function (url, options) {
+        $.getJSON(url, function (data) {
+            console.log('strade: ' + data);
+        });
     }
 });
 

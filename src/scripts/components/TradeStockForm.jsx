@@ -27,26 +27,26 @@ var TradeStockForm = React.createClass({
         return (
             <Form horizontal className="tradeOptionForm">
                 <FormGroup controlId="formUnderlying">
-                    <Col componentClass={ControlLabel} sm={2}>
+                    <Col componentClass={ControlLabel} sm={3}>
                         Underlying
                     </Col>
-                    <Col sm={4}>
+                    <Col sm={5}>
                         <FormControl type="text" onChange={this.handleUnderlying}/>
                     </Col>
                 </FormGroup>
                 <FormGroup controlId="formQuantity">
-                    <Col componentClass={ControlLabel} sm={2}>
+                    <Col componentClass={ControlLabel} sm={3}>
                         Quantity
                     </Col>
-                    <Col sm={4}>
+                    <Col sm={5}>
                         <FormControl type="text" onChange={this.handleQuantity}/>
                     </Col>
                 </FormGroup>
-                <Col sm={2}>
+                <div id="stockSubmitBtn">
                     <Button type="button" onClick={this.handleSubmit}>
                         Execute
                     </Button>
-                </Col>
+                </div>
             </Form>
         );
     }

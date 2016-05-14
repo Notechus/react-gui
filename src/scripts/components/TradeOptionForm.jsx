@@ -5,11 +5,10 @@ var FormGroup = require('react-bootstrap').FormGroup;
 var ControlLabel = require('react-bootstrap').ControlLabel;
 var Button = require('react-bootstrap').Button;
 var Col = require('react-bootstrap').Col;
-var MarketStore = require('../stores/MarketDataStore');
-var AppDispatcher = require('../dispatcher/AppDispatcher');
+var PortfolioStore = require('../stores/PortfolioStore');
 
 function getUnderlyingFromStore(id) {
-    return MarketStore.getUnderlying(id);
+    return PortfolioStore.getUnderlying(id);
 }
 
 var TradeOptionForm = React.createClass({
@@ -21,11 +20,14 @@ var TradeOptionForm = React.createClass({
             submited: false
         };
     },
-    onMarketDataChange: function () {
-        this.setState(getUnderlyingFromStore(this.state.id));
-    },
     handleID: function (e) {
         this.setState({id: e.target.value});
+        var x = getUnderlyingFromStore(e.target.value);
+        if (typeof x == "undefined") {
+            this.setState({underlying: ''});
+        } else {
+            this.setState({underlying: x});
+        }
     },
     handleUnderlying: function (e) {
         this.setState({underlying: e.target.value});
@@ -40,34 +42,36 @@ var TradeOptionForm = React.createClass({
         return (
             <Form horizontal className="tradeOptionForm">
                 <FormGroup controlId="formID">
-                    <Col componentClass={ControlLabel} sm={2}>
+                    <Col componentClass={ControlLabel} sm={3}>
                         Option ID
                     </Col>
-                    <Col sm={4}>
+                    <Col sm={5}>
                         <FormControl type="text" onChange={this.handleID}/>
                     </Col>
                 </FormGroup>
                 <FormGroup controlId="formUnderlying">
-                    <Col componentClass={ControlLabel} sm={2}>
+                    <Col componentClass={ControlLabel} sm={3}>
                         Underlying
                     </Col>
-                    <Col sm={4}>
-                        <FormControl type="text" onChange={this.handleUnderlying}/>
+                    <Col sm={5}>
+                        <FormControl.Static
+                            onChange={this.handleUnderlying}>{this.state.underlying}
+                        </FormControl.Static>
                     </Col>
                 </FormGroup>
                 <FormGroup controlId="formQuantity">
-                    <Col componentClass={ControlLabel} sm={2}>
+                    <Col componentClass={ControlLabel} sm={3}>
                         Quantity
                     </Col>
-                    <Col sm={4}>
+                    <Col sm={5}>
                         <FormControl type="text" onChange={this.handleQuantity}/>
                     </Col>
                 </FormGroup>
-                <Col sm={2}>
+                <div id="tradeSubmitBtn">
                     <Button type="button" onClick={this.handleSubmit}>
                         Execute
                     </Button>
-                </Col>
+                </div>
             </Form>
         );
     }

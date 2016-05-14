@@ -6,6 +6,7 @@ var ClockPanel = require('./components/ClockPanel');
 var MainBody = require('./components/MainBody');
 var AppDispatcher = require('./dispatcher/AppDispatcher');
 var WebSocket = require('./components/WebSocket');
+var PortfolioStore = require('./stores/PortfolioStore');
 
 var App = React.createClass({
         handleViews: function (key) {
@@ -24,17 +25,16 @@ var App = React.createClass({
         componentDidMount: function () {
             WebSocket.init("karnicki.pl/api/WSChat");
             WebSocket.addMessageHandler(this.handleMessage);
-            /*alert("Please look at:\n https://github.com/Notechus/react-gui\n\n" +
-             "It contains newer version of UI, which may help\n in better understanding " +
-             "some things I did here.");*/
+            PortfolioStore.loadCreatedOptions("http://karnicki.pl/api/option?trader=defaultUsername&underlying=All");
         },
         render: function () {
-            return (<div>
-                <NavbarMenu handleViews={this.handleViews}/>
-                <MainBody view={this.state.view}/>
-                <ClockPanel/>
-                <StatusPanel/>
-            </div>);
+            return (
+                <div>
+                    <NavbarMenu handleViews={this.handleViews}/>
+                    <MainBody view={this.state.view}/>
+                    <ClockPanel/>
+                    <StatusPanel/>
+                </div>);
         }
     })
     ;
