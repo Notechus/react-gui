@@ -6,10 +6,11 @@ module.exports = {
     },
     module: {
         loaders: [
-            {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'}
+            {test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader'},
+            {include: /\.json$/, loader: 'json-loader'}
         ]
     },
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: ['', '.js', '.jsx', '.json']
     }
 };

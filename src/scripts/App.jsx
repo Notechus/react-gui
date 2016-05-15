@@ -25,7 +25,7 @@ var App = React.createClass({
         componentDidMount: function () {
             WebSocket.init("karnicki.pl/api/WSChat");
             WebSocket.addMessageHandler(this.handleMessage);
-            PortfolioStore.loadCreatedOptions("http://karnicki.pl/api/option?trader=defaultUsername&underlying=All");
+            //PortfolioStore.loadCreatedOptions("http://karnicki.pl/api/option?trader=defaultUsername&underlying=All");
         },
         render: function () {
             return (

@@ -3,6 +3,8 @@ var ButtonToolbar = require('react-bootstrap').ButtonToolbar;
 var Button = require('react-bootstrap').Button;
 var Glyphicon = require('react-bootstrap').Glyphicon;
 var MarketStore = require('../stores/MarketDataStore');
+var MarketHistoryChart = require('./MarketHistoryChart');
+var MyLineChart = require('./MyLineChart');
 
 function getStateFromStore() {
     return {
@@ -51,7 +53,7 @@ var ActualStockHistory = React.createClass({
                 }
             }
             return (
-                <ButtonToolbar>
+                <ButtonToolbar className="marketHistoryButtons">
                     {stocks}
                 </ButtonToolbar>
             );
@@ -64,6 +66,7 @@ var MarketHistory = React.createClass({
         return (
             <div id="actualStockPrice">
                 <ActualStockHistory/>
+                <MarketHistoryChart/>
             </div>
         );
     }

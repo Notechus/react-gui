@@ -73,7 +73,9 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
         xrs.open('GET', url, true);
         xrs.withCredentials = true;
         xrs.onreadystatechange = function (data) {
-            console.log('option: ' + data);
+            var resp = JSON.parse(xrs.responseText);
+            //console.log('option: ' + data);
+            console.log('option: ' + resp);
         };
         xrs.send();
     },

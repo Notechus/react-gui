@@ -1,14 +1,22 @@
 var React = require('react');
+var moment = require('moment-timezone');
 
 var renderTime = function (offset) {
-    var currentTime = new Date();
-    if (offset != 0) {
-        currentTime.setHours(currentTime.getUTCHours() + offset);
+    var currentTime = null;
+    if (offset === "New York") {
+        currentTime = moment().tz("America/New_York");
+    } else if (offset === "London") {
+        currentTime = moment().tz("Europe/London");
+    } else if (offset === "Tokyo") {
+        currentTime = moment().tz("Asia/Tokyo");
+    }
+    else {
+        currentTime = moment();
     }
     var diem = " AM";
-    var h = currentTime.getHours();
-    var m = currentTime.getMinutes();
-    var s = currentTime.getSeconds();
+    var h = currentTime.get('hour');
+    var m = currentTime.get('minute');
+    var s = currentTime.get('second');
 
 
     if (h == 0) {
@@ -46,7 +54,7 @@ const Clock = React.createClass({
         setInterval(this.tick, 1000);
     },
     tick() {
-        var output = renderTime(this.props.timeOffset);
+        var output = renderTime(this.props.city);
         this.setState({hours: output.hours, minutes: output.minutes, seconds: output.seconds, diem: output.diem});
     },
     render() {
@@ -62,7 +70,6 @@ const Clock = React.createClass({
     }
 });
 
-// ATM London has +1
 var ClockPanel = React.createClass({
     render: function () {
         return (
