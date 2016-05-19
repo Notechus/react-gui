@@ -14,11 +14,13 @@ var PortfolioPage = React.createClass({
     },
     render: function () {
         return (
-            <Tabs activeKey={this.state.key} onSelect={this.handleSelect} id="portfolioTabs">
-                <Tab eventKey={1} title="Created Options"><CreatedOptionTable/></Tab>
-                <Tab eventKey={2} title="Option Trades"><OptionTradeTable/></Tab>
-                <Tab eventKey={3} title="Stock Trades"><StockTradeTable/></Tab>
-            </Tabs>
+            <div id="portfolio">
+                <Tabs activeKey={this.state.key} onSelect={this.handleSelect} id="portfolioTabs">
+                    <Tab eventKey={1} title="Created Options"><CreatedOptionTable/></Tab>
+                    <Tab eventKey={2} title="Option Trades"><OptionTradeTable/></Tab>
+                    <Tab eventKey={3} title="Stock Trades"><StockTradeTable/></Tab>
+                </Tabs>
+            </div>
         );
     }
 });

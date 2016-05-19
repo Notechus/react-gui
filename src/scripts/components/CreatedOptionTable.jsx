@@ -1,6 +1,7 @@
 var React = require('react');
-var Table = require('react-bootstrap').Table;
 var PortfolioStore = require('../stores/PortfolioStore');
+var BootstrapTable = require('react-bootstrap-table').BootstrapTable;
+var TableHeaderColumn = require('react-bootstrap-table').TableHeaderColumn;
 
 function getCOptionsFromStore() {
     return PortfolioStore.getAllCreatedOptions();
@@ -20,37 +21,19 @@ var CreatedOptionTable = React.createClass({
         PortfolioStore.removeChangeListener(this.onOptionsChange);
     },
     render: function () {
-        var options = [];
-        var self = this;
-        var counter = 1;
-        for (var i in self.state.options) {
-            var tmp = self.state.options[i];
-            options.push(
-                <tr>
-                    <td>{counter++}</td>
-                    <td>{tmp.id}</td>
-                    <td>{tmp.underlying}</td>
-                    <td>{tmp.direction}</td>
-                    <td>{tmp.maturity.toString()}</td>
-                    <td>{tmp.price}</td>
-                </tr>
-            );
-        }
-        return (<Table responsive>
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>ID</th>
-                    <th>Underlying</th>
-                    <th>Direction</th>
-                    <th>Maturity</th>
-                    <th>Price</th>
-                </tr>
-                </thead>
-                <tbody>
-                {options}
-                </tbody>
-            </Table>
+        var y = window.innerHeight * 0.4;
+        return (
+            <div className="createdOptionTable">
+                <BootstrapTable data={this.state.options} striped={true} hover={true} condensed={true}
+                                height={y.toString()}>
+                    <TableHeaderColumn dataField="counter" dataSort={true} width="70">#</TableHeaderColumn>
+                    <TableHeaderColumn dataField="id" isKey={true} dataSort={true}>ID</TableHeaderColumn>
+                    <TableHeaderColumn dataField="underlying" dataSort={true}>Underlying</TableHeaderColumn>
+                    <TableHeaderColumn dataField="direction" dataSort={true} width="120">Direction</TableHeaderColumn>
+                    <TableHeaderColumn dataField="maturity" dataSort={true}>Maturity</TableHeaderColumn>
+                    <TableHeaderColumn dataField="price" dataSort={true} width="120">Price</TableHeaderColumn>
+                </BootstrapTable>
+            </div>
         );
     }
 });

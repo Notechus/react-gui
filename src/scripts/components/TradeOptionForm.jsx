@@ -41,7 +41,10 @@ var TradeOptionForm = React.createClass({
     render: function () {
         return (
             <Form horizontal className="tradeOptionForm">
-                <FormGroup controlId="formID">
+                <FormGroup>
+                    <FormControl.Static>{''}</FormControl.Static>
+                </FormGroup>
+                <FormGroup controlId="formID" bsSize="small">
                     <Col componentClass={ControlLabel} sm={3}>
                         Option ID
                     </Col>
@@ -49,7 +52,7 @@ var TradeOptionForm = React.createClass({
                         <FormControl type="text" onChange={this.handleID}/>
                     </Col>
                 </FormGroup>
-                <FormGroup controlId="formUnderlying">
+                <FormGroup controlId="formUnderlying" bsSize="small">
                     <Col componentClass={ControlLabel} sm={3}>
                         Underlying
                     </Col>
@@ -59,7 +62,7 @@ var TradeOptionForm = React.createClass({
                         </FormControl.Static>
                     </Col>
                 </FormGroup>
-                <FormGroup controlId="formQuantity">
+                <FormGroup controlId="formQuantity" bsSize="small">
                     <Col componentClass={ControlLabel} sm={3}>
                         Quantity
                     </Col>
@@ -67,11 +70,11 @@ var TradeOptionForm = React.createClass({
                         <FormControl type="text" onChange={this.handleQuantity}/>
                     </Col>
                 </FormGroup>
-                <div id="tradeSubmitBtn">
+                <Col smOffset={9} sm={2}>
                     <Button type="button" onClick={this.handleSubmit}>
                         Execute
                     </Button>
-                </div>
+                </Col>
             </Form>
         );
     }

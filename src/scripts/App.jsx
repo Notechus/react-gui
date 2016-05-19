@@ -9,35 +9,51 @@ var WebSocket = require('./components/WebSocket');
 var PortfolioStore = require('./stores/PortfolioStore');
 
 var App = React.createClass({
-        handleViews: function (key) {
-            if (this.state.view != key) this.setState({view: key});
-        },
-        getInitialState: function () {
-            return {view: 1};
-        },
-        handleMessage: function (event) {
-            var tmp = JSON.parse(event.data);
-            AppDispatcher.dispatch({
-                actionType: 'MARKET_NEW_CHANGE',
-                data: tmp
-            });
-        },
-        componentDidMount: function () {
-            WebSocket.init("karnicki.pl/api/WSChat");
-            WebSocket.addMessageHandler(this.handleMessage);
-            //PortfolioStore.loadCreatedOptions("http://karnicki.pl/api/option?trader=defaultUsername&underlying=All");
-        },
-        render: function () {
-            return (
-                <div>
-                    <NavbarMenu handleViews={this.handleViews}/>
-                    <MainBody view={this.state.view}/>
-                    <ClockPanel/>
-                    <StatusPanel/>
-                </div>);
-        }
-    })
-    ;
+    handleViews: function (key) {
+        if (this.state.view != key) this.setState({view: key});
+    },
+    getInitialState: function () {
+        return {view: 1};
+    },
+    handleMessage: function (event) {
+        var tmp = JSON.parse(event.data);
+        AppDispatcher.dispatch({
+            actionType: 'MARKET_NEW_CHANGE',
+            data: tmp
+        });
+    },
+    componentDidMount: function () {
+        AppDispatcher.dispatch({
+            actionType: 'PORTFOLIO_GET_CREATED_TRADES',
+            data: {
+                url: "http://karnicki.pl/api/option", options: "trader=defaultUsername"
+            }
+        });
+        AppDispatcher.dispatch({
+            actionType: 'PORTFOLIO_GET_EXISTING_OPTIONS',
+            data: {
+                url: "http://karnicki.pl/api/trade", options: "trader=defaultUsername&TradeType=EuropeanOption"
+            }
+        });
+        AppDispatcher.dispatch({
+            actionType: 'PORTFOLIO_GET_EXISTING_STOCK',
+            data: {
+                url: "http://karnicki.pl/api/trade", options: "trader=defaultUsername&TradeType=Stock"
+            }
+        });
+        WebSocket.init("karnicki.pl/api/WSChat");
+        WebSocket.addMessageHandler(this.handleMessage);
+    },
+    render: function () {
+        return (
+            <div>
+                <NavbarMenu handleViews={this.handleViews}/>
+                <MainBody view={this.state.view}/>
+                <ClockPanel/>
+                <StatusPanel/>
+            </div>);
+    }
+});
 
 window.onload = () => {
     ReactDOM.render(<App/>, document.getElementById('content'));

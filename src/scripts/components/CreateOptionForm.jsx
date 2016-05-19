@@ -23,7 +23,6 @@ var CreateOptionForm = React.createClass({
             maturity: new Date(),
             direction: '',
             optStrike: 0,
-            submited: false,
             underlyings: getUnderlyingsFromStore()
         };
     },
@@ -32,18 +31,15 @@ var CreateOptionForm = React.createClass({
     },
     validateNotional: function () {
         const x = this.state.notional;
-        console.log('not ' + x);
         if (x >= 1000000 || x <= -1000000) return 'error';
         if (!Number.isInteger(x)) return 'error';
     },
     validateMaturity: function () {
         var mat = this.state.maturity;
-        console.log('mat ' + mat);
         if (moment().isAfter(mat)) return 'error';
     },
     validateStrike: function () {
         var x = this.state.optStrike;
-        console.log('str ' + x);
         if (isNaN(x)) return 'error';
     },
     handleUnderlying: function (e) {
@@ -72,7 +68,6 @@ var CreateOptionForm = React.createClass({
             actionType: 'PORTFOLIO_NEW_OPTION',
             data: tmp
         });
-        this.setState({submited: true});
     },
     componentDidMount: function () {
         MarketStore.addChangeListener(this.onMarketDataChange);
@@ -86,60 +81,45 @@ var CreateOptionForm = React.createClass({
         });
         return (
             <Form horizontal className="createOptionForm">
-                <FormGroup controlId="formUnderlying">
-                    <Col componentClass={ControlLabel} sm={3}>
-                        Underlying
-                    </Col>
-                    <Col sm={5}>
+                <FormGroup bsSize="small">
+                    <FormControl.Static>{' '}</FormControl.Static>
+                </FormGroup>
+                <FormGroup controlId="formUnderlying" bsSize="small">
+                    <Col componentClass={ControlLabel} sm={2}> Underlying </Col>
+                    <Col sm={3}>
                         <FormControl componentClass="select" onChange={this.handleUnderlying}>
                             <option value="">select</option>
                             {options}
                         </FormControl>
                     </Col>
-                </FormGroup>
-                <FormGroup controlId="formNotional">
-                    <Col componentClass={ControlLabel} sm={3}>
-                        Notional
-                    </Col>
-                    <Col sm={5}>
+                    <Col componentClass={ControlLabel} sm={2}> Notional </Col>
+                    <Col sm={4}>
                         <FormControl type="text" onChange={this.handleNotional}/>
-                        <FormControl.Feedback/>
                     </Col>
                 </FormGroup>
-                <FormGroup controlId="formMaturity">
-                    <Col componentClass={ControlLabel} sm={3}>
-                        Maturity
-                    </Col>
-                    <Col sm={5}>
-                        <Datetime onChange={this.handleMaturity}/>
-                        <FormControl.Feedback/>
-                    </Col>
-                </FormGroup>
-                <FormGroup controlID="formDirection">
-                    <Col componentClass={ControlLabel} sm={3}>
-                        Direction
-                    </Col>
-                    <Col sm={5}>
-                        <FormControl componentClass="select" placeholder="select" onChange={this.handleDirection}>
+                <FormGroup controlID="formDirection" bsSize="small">
+                    <Col componentClass={ControlLabel} sm={2}> Direction </Col>
+                    <Col sm={3}>
+                        <FormControl componentClass="select" placeholder="select"
+                                     onChange={this.handleDirection}>
                             <option value="PUT">PUT</option>
                             <option value="CALL">CALL</option>
                         </FormControl>
                     </Col>
+                    <Col componentClass={ControlLabel} sm={2}> Strike </Col>
+                    <Col sm={4}><FormControl type="text" onChange={this.handleStrike}/></Col>
                 </FormGroup>
-                <FormGroup controlId="formStrike">
-                    <Col componentClass={ControlLabel} sm={3}>
-                        Strike
-                    </Col>
-                    <Col sm={5}>
-                        <FormControl type="text" onChange={this.handleStrike}/>
-                        <FormControl.Feedback/>
+                <FormGroup controlId="formMaturity" bsSize="small">
+                    <Col componentClass={ControlLabel} sm={2}> Maturity </Col>
+                    <Col sm={5}><Datetime onChange={this.handleMaturity}/></Col>
+                </FormGroup>
+                <FormGroup>
+                    <Col smOffset={9} sm={2}>
+                        <Button type="button" onClick={this.handleSubmit}>
+                            <Glyphicon glyph="plus"></Glyphicon>
+                        </Button>
                     </Col>
                 </FormGroup>
-                <div id="createdSubmitBtn">
-                    <Button type="button" bsStyle="success" onClick={this.handleSubmit}>
-                        <Glyphicon glyph="plus"></Glyphicon>
-                    </Button>
-                </div>
             </Form>
         );
     }

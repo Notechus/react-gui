@@ -1,6 +1,7 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
+var moment = require('moment');
 
 var PortfolioStore = assign({}, EventEmitter.prototype, {
     createdOptions: {},
@@ -25,30 +26,42 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
         this.removeListener('change', callback);
     },
     getAllCreatedOptions: function () {
-        return this.createdOptions;
+        var self = this;
+        var tmp = [];
+        var counter = 1;
+        Object.keys(this.createdOptions).forEach(function (key) {
+            var x = self.createdOptions[key];
+            x.counter = counter++;
+            tmp.push(x);
+        });
+        return tmp;
     },
     getAllStock: function () {
         return this.tradeStock;
     },
     getAllOption: function () {
-        return this.tradeOptions;
+        var self = this;
+        var tmp = [];
+        Object.keys(this.tradeOptions).forEach(function (key) {
+            var x = self.tradeOptions[key];
+            //x.underlying = self.getUnderlying(x.id);
+            tmp.push(x);
+        });
+        return tmp;
     },
     getUnderlying: function (id) {
-        console.log(id);
-        console.log(this.createdOptions[id]);
         return this.createdOptions[id].underlying;
     },
     addCreatedOption: function (item) {
         //(#, ID, Underlying, Direction, Maturity, Price)
-        var id = this.guid();
         var tmp = {
-            id: id,
+            id: item.id,
             underlying: item.underlying,
             direction: item.direction,
             maturity: item.maturity,
             price: item.price
         };
-        this.createdOptions[id] = tmp;
+        this.createdOptions[item.id] = tmp;
     },
     addTradeOption: function (item) {
         //(#, ID, Underlying, Quantity)
@@ -69,27 +82,51 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
         this.tradeStock.push(tmp);
     },
     loadCreatedOptions: function (url, options) {
-        var xrs = new XMLHttpRequest();
-        xrs.open('GET', url, true);
-        xrs.withCredentials = true;
-        xrs.onreadystatechange = function (data) {
-            var resp = JSON.parse(xrs.responseText);
-            //console.log('option: ' + data);
-            console.log('option: ' + resp);
-        };
-        xrs.send();
+        var self = this;
+        $.getJSON(url, options, function (result) {
+            var res = jQuery.parseJSON(result);
+            res.forEach(function (item) {
+                var id = item.Id;
+                self.createdOptions[id] = {
+                    id: id,
+                    underlying: item.Underlying,
+                    direction: item.CallPutStr,
+                    maturity: moment(item.Maturity).format('MMMM Do YYYY, h:mm:ss a'),
+                    price: item.Strike
+                };
+            });
+        });
     },
-    loadOptionTrade: function (url) {
-        xrs = new XMLHttpRequest();
-        xrs.open('GET', url, true);
-        xrs.onreadystatechange = function (data) {
-            console.log('otrade: ' + data);
-        }
-        xrs.send();
+    loadOptionTrade: function (url, options) {
+        var self = this;
+        var counter = 1;
+        $.getJSON(url, options, function (result) {
+            var res = jQuery.parseJSON(result);
+            res.forEach(function (item) {
+                var id = item.Id;
+                self.tradeOptions[id] = {
+                    counter: counter,
+                    id: id,
+                    quantity: item.Quantity
+                };
+                counter++;
+            });
+        });
     },
     loadStockTrade: function (url, options) {
-        $.getJSON(url, function (data) {
-            console.log('strade: ' + data);
+        var self = this;
+        var counter = 1;
+        $.getJSON(url, options, function (result) {
+            var res = jQuery.parseJSON(result);
+            res.forEach(function (item) {
+                var id = item.Id;
+                self.tradeStock.push({
+                    counter: counter,
+                    underlying: item.Underlying,
+                    quantity: item.Quantity
+                });
+                counter++;
+            });
         });
     }
 });
@@ -106,6 +143,18 @@ AppDispatcher.register(function (action) {
             break;
         case 'PORTFOLIO_NEW_STOCK_TRADE':
             PortfolioStore.addTradeStock(action.data);
+            PortfolioStore.emitChange();
+            break;
+        case 'PORTFOLIO_GET_CREATED_TRADES':
+            PortfolioStore.loadCreatedOptions(action.data.url, action.data.options);
+            PortfolioStore.emitChange();
+            break;
+        case 'PORTFOLIO_GET_EXISTING_OPTIONS':
+            PortfolioStore.loadOptionTrade(action.data.url, action.data.options);
+            PortfolioStore.emitChange();
+            break;
+        case 'PORTFOLIO_GET_EXISTING_STOCK':
+            PortfolioStore.loadStockTrade(action.data.url, action.data.options);
             PortfolioStore.emitChange();
             break;
     }

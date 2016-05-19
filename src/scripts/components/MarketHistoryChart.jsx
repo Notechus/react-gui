@@ -37,14 +37,16 @@ var MarketHistoryChart = React.createClass({
             this.setState(getChartDataFromStore());
         },
         render: function () {
+            var x = (window.innerWidth * 0.5);
+            var y = (window.innerHeight * 0.5);
             var colorScale = d3.scale.category20();
             if (Object.keys(this.state.data).length < 1) {
-                var data = {label: 'No data available', values: [{x: 'No data available', y: 1}]}
+                var data = {label: 'No data available', values: [{x: 'No data available', y: 1}]};
                 return (<div className="marketPriceChart">
                     <LineChart
                         data={data}
-                        width={800}
-                        height={600}
+                        width={x}
+                        height={y}
                         shapeColor={"red"}
                         margin={{top:50,bottom:50,left:50,right:50}}
                         xAxis={{innerTickSize: 6, label: 'Time'}}
@@ -54,16 +56,14 @@ var MarketHistoryChart = React.createClass({
             } else {
                 var self = this;
                 var chartData = [];
-                /*Object.keys(this.state.data).forEach(function (key) {
-                 chartData.push(self.state.data[key]);
-                 });*/
-                chartData.push(self.state.data['GOOG']);
-                // console.log(util.inspect(chartData, {showHidden: false, depth: null}));
+                Object.keys(this.state.data).forEach(function (key) {
+                    chartData.push(self.state.data[key]);
+                });
                 return (
                     <div className="marketPriceChart">
                         <LineChart
-                            width={800}
-                            height={600}
+                            width={x}
+                            height={y}
                             data={chartData}
                             label={this.labelAccessor}
                             x={this.xAccessor}
