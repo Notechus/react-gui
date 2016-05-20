@@ -2,6 +2,7 @@
   "name": "react-test",
   "version": "0.0.1",
   "dependencies": {
+    "d3": "^3.5.17",
     "flux": "^2.1.1",
     "moment": "^2.13.0",
     "moment-timezone": "^0.5.4",

@@ -7,6 +7,9 @@ var util = require('util');
 var MarketDataStore = assign({}, EventEmitter.prototype, {
     marketData: {},
     chartMarketData: {},
+    maxChartItems: 49,
+    chartMinValue: 1000,
+    chartMaxValue: 0,
     emitChange: function () {
         this.emit('change');
     },
@@ -29,33 +32,42 @@ var MarketDataStore = assign({}, EventEmitter.prototype, {
     getChartData: function () {
         return this.chartMarketData;
     },
-    getChartData2: function () {
-        var chartData = [];
-        var self = this;
-        Object.keys(this.chartMarketData).forEach(function (key) {
-            chartData.push(self.chartMarketData[key].values);
-        });
-        console.log(util.inspect(chartData, {showHidden: false, depth: null}));
-        return chartData;
+    getMin: function () {
+        return this.chartMinValue;
+    },
+    getMax: function () {
+        return this.chartMaxValue;
     },
     add: function (item) {
         var id = item.Name;
-        //console.log('id ' + id);
         this.marketData[id] = {
             timestamp: item.TimestampUtc,
             name: item.Name,
             price: item.Price,
             oldPrice: item.OldPrice
         };
-        var time = moment(item.TimestampUtc).format('h:mm:ss a');
+        //var time = moment(item.TimestampUtc).format('h:mm:ss a');
+        var time = new Date(item.TimestampUtc).getTime();
         if (typeof this.chartMarketData[id] === "undefined" || this.chartMarketData[id] === null) {
             this.chartMarketData[id] = {
                 label: id,
-                values: [{x: time, y: item.Price}]
+                values: [{x: time, y: parseFloat(item.Price)}]
             };
+            var y = parseFloat(item.Price);
+            if (y > this.chartMaxValue) this.chartMaxValue = y;
+            else if (y < this.chartMinValue) this.chartMinValue = y;
         } else {
-            this.chartMarketData[id].label = id;
-            this.chartMarketData[id].values.push({x: time, y: item.Price});
+            var x = this.chartMarketData[id];
+            x.label = id;
+            var y = parseFloat(item.Price);
+            if (y > this.chartMaxValue) this.chartMaxValue = y;
+            else if (y < this.chartMinValue) this.chartMinValue = y;
+            if (x.values.length < this.maxChartItems) {
+                x.values.push({x: time, y: parseFloat(item.Price)});
+            } else {
+                x.values.shift();
+                x.values.push({x: time, y: parseFloat(item.Price)});
+            }
         }
     }
 });

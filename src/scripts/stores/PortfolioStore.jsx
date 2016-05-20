@@ -7,15 +7,6 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
     createdOptions: {},
     tradeOptions: {},
     tradeStock: [],
-    s4: function () {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
-    },
-    guid: function () {
-        return (this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
-        this.s4() + '-' + this.s4() + this.s4() + this.s4());
-    },
     emitChange: function () {
         this.emit('change');
     },
@@ -128,6 +119,26 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
                 counter++;
             });
         });
+    },
+    postCreatedOption: function (url, item) {
+        $.post(url, item, function (data) {
+        });
+    },
+    postOptionTrade: function (url, item) {
+        $.post(url, item, function (data) {
+
+        });
+    },
+    postStockTrade: function (url, item) {
+        $.post(url, item, function (data) {
+
+        });
+    },
+    validateId: function (id) {
+        Object.keys(this.createdOptions).forEach(function (key) {
+            if (key === id) return true;
+        });
+        return false;
     }
 });
 
@@ -155,6 +166,18 @@ AppDispatcher.register(function (action) {
             break;
         case 'PORTFOLIO_GET_EXISTING_STOCK':
             PortfolioStore.loadStockTrade(action.data.url, action.data.options);
+            PortfolioStore.emitChange();
+            break;
+        case 'PORTFOLIO_POST_NEW_CREATED_OPTION':
+            PortfolioStore.postCreatedOption(action.data.url, action.data.item);
+            PortfolioStore.emitChange();
+            break;
+        case 'PORTFOLIO_POST_NEW_OPTION_TRADE':
+            PortfolioStore.postOptionTrade(action.data.url, action.data.item);
+            PortfolioStore.emitChange();
+            break;
+        case 'PORTFOLIO_POST_NEW_STOCK_TRADE':
+            PortfolioStore.postStockTrade(action.data.url, action.data.item);
             PortfolioStore.emitChange();
             break;
     }

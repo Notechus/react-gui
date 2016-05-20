@@ -4,10 +4,31 @@ var OptionTradeTable = require('./OptionTradeTable');
 var StockTradeTable = require('./StockTradeTable');
 var Tabs = require('react-bootstrap').Tabs;
 var Tab = require('react-bootstrap').Tab;
+var AppDispatcher = require('../dispatcher/AppDispatcher');
 
 var PortfolioPage = React.createClass({
     getInitialState: function () {
         return {key: 1};
+    },
+    componentDidMount: function () {
+        AppDispatcher.dispatch({
+            actionType: 'PORTFOLIO_GET_CREATED_TRADES',
+            data: {
+                url: "http://karnicki.pl/api/option", options: "trader=SebastianPaulus"
+            }
+        });
+        AppDispatcher.dispatch({
+            actionType: 'PORTFOLIO_GET_EXISTING_OPTIONS',
+            data: {
+                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=EuropeanOption"
+            }
+        });
+        AppDispatcher.dispatch({
+            actionType: 'PORTFOLIO_GET_EXISTING_STOCK',
+            data: {
+                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=Stock"
+            }
+        });
     },
     handleSelect(key){
         this.setState({key: key});

@@ -26,19 +26,19 @@ var App = React.createClass({
         AppDispatcher.dispatch({
             actionType: 'PORTFOLIO_GET_CREATED_TRADES',
             data: {
-                url: "http://karnicki.pl/api/option", options: "trader=defaultUsername"
+                url: "http://karnicki.pl/api/option", options: "trader=SebastianPaulus"
             }
         });
         AppDispatcher.dispatch({
             actionType: 'PORTFOLIO_GET_EXISTING_OPTIONS',
             data: {
-                url: "http://karnicki.pl/api/trade", options: "trader=defaultUsername&TradeType=EuropeanOption"
+                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=EuropeanOption"
             }
         });
         AppDispatcher.dispatch({
             actionType: 'PORTFOLIO_GET_EXISTING_STOCK',
             data: {
-                url: "http://karnicki.pl/api/trade", options: "trader=defaultUsername&TradeType=Stock"
+                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=Stock"
             }
         });
         WebSocket.init("karnicki.pl/api/WSChat");

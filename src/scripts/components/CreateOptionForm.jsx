@@ -8,16 +8,66 @@ var Glyphicon = require('react-bootstrap').Glyphicon;
 var Datetime = require('react-datetime');
 var moment = require('moment');
 var Col = require('react-bootstrap').Col;
+var Alert = require('react-bootstrap').Alert;
 var MarketStore = require('../stores/MarketDataStore');
+var DetailsStore = require('../stores/DetailsStore');
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 
 function getUnderlyingsFromStore() {
     return MarketStore.getAllUnderlyings();
 }
 
+function getSubmitStateFromStore() {
+    return DetailsStore.getCreateSubmitState();
+}
+
+var SubmitMessage = React.createClass({
+    getInitialState: function () {
+        return getSubmitStateFromStore();
+    },
+    onSubmitChange: function () {
+        this.setState(getSubmitStateFromStore());
+    },
+    changeSubmitForEmpty: function () {
+        AppDispatcher.dispatch({
+            actionType: 'SUBMIT_UPDATE',
+            data: {
+                submit: 'empty',
+                msg: 'you should not see this'
+            }
+        });
+    },
+    componentDidMount: function () {
+        DetailsStore.addChangeListener(this.onSubmitChange);
+    },
+    componentWillUnmount: function () {
+        DetailsStore.removeChangeListener(this.onSubmitChange);
+    },
+    render: function () {
+        if (this.state.submit === 'success') {
+            return (
+                <Alert bsStyle="success" onDismiss={this.changeSubmitForEmpty}>
+                    <strong>{this.state.msg}</strong>
+                </Alert>
+            );
+        }
+        if (this.state.submit === 'error') {
+            return (
+                <Alert bsStyle="danger" onDismiss={this.changeSubmitForEmpty}>
+                    <strong>{this.state.msg}</strong>
+                </Alert>
+            );
+        }
+        else {
+            return null;
+        }
+    }
+});
+
 var CreateOptionForm = React.createClass({
     getInitialState: function () {
         return {
+            url: 'http://karnicki.pl/api/option',
             underlying: '',
             notional: 0,
             maturity: new Date(),
@@ -27,20 +77,55 @@ var CreateOptionForm = React.createClass({
         };
     },
     onMarketDataChange: function () {
-        this.setState(getUnderlyingsFromStore());
+        this.setState({underlyings: getUnderlyingsFromStore()});
     },
     validateNotional: function () {
-        const x = this.state.notional;
-        if (x >= 1000000 || x <= -1000000) return 'error';
+        const x = parseInt(this.state.notional);
         if (!Number.isInteger(x)) return 'error';
+        else return 'success';
     },
     validateMaturity: function () {
         var mat = this.state.maturity;
         if (moment().isAfter(mat)) return 'error';
+        else return 'success';
     },
     validateStrike: function () {
         var x = this.state.optStrike;
         if (isNaN(x)) return 'error';
+        else return 'success';
+    },
+    validateSubmit: function () {
+        if (this.validateNotional() === 'error') {
+            AppDispatcher.dispatch({
+                actionType: 'CREATE_SUBMIT_UPDATE',
+                data: {
+                    submit: 'error',
+                    msg: 'Notional should be a number.'
+                }
+            });
+            return false;
+        }
+        if (this.validateMaturity() === 'error') {
+            AppDispatcher.dispatch({
+                actionType: 'CREATE_SUBMIT_UPDATE',
+                data: {
+                    submit: 'error',
+                    msg: 'Maturity must be higher than actual date.'
+                }
+            });
+            return false;
+        }
+        if (this.validateStrike() === 'error') {
+            AppDispatcher.dispatch({
+                actionType: 'CREATE_SUBMIT_UPDATE',
+                data: {
+                    submit: 'error',
+                    msg: 'Strike should be a number.'
+                }
+            });
+            return false;
+        }
+        return true;
     },
     handleUnderlying: function (e) {
         this.setState({underlying: e.target.value});
@@ -49,7 +134,8 @@ var CreateOptionForm = React.createClass({
         this.setState({notional: e.target.value});
     },
     handleMaturity: function (e) {
-        this.setState({maturity: e});
+        var tmp = moment(e._d).toISOString();
+        this.setState({maturity: tmp});
     },
     handleDirection: function (e) {
         this.setState({direction: e.target.value});
@@ -59,15 +145,36 @@ var CreateOptionForm = React.createClass({
     },
     handleSubmit: function () {
         var tmp = {
-            underlying: this.state.underlying,
-            maturity: this.state.maturity,
-            direction: this.state.direction,
-            price: this.state.optStrike
+            Underlying: this.state.underlying,
+            Notional: this.state.notional,
+            Maturity: this.state.maturity,
+            CallPutStr: this.state.direction,
+            Strike: this.state.optStrike,
+            UserName: 'SebastianPaulus'
         };
-        AppDispatcher.dispatch({
-            actionType: 'PORTFOLIO_NEW_OPTION',
-            data: tmp
-        });
+        var res = this.validateSubmit();
+        if (res) {
+            AppDispatcher.dispatch({
+                actionType: 'CREATE_SUBMIT_UPDATE',
+                data: {
+                    submit: 'success',
+                    msg: 'You have created option successfully.'
+                }
+            });
+            AppDispatcher.dispatch({
+                actionType: 'PORTFOLIO_POST_NEW_CREATED_OPTION',
+                data: {
+                    item: tmp,
+                    url: this.state.url
+                }
+            });
+            AppDispatcher.dispatch({
+                actionType: 'PORTFOLIO_GET_CREATED_TRADES',
+                data: {
+                    url: this.state.url, options: "trader=SebastianPaulus"
+                }
+            });
+        }
     },
     componentDidMount: function () {
         MarketStore.addChangeListener(this.onMarketDataChange);
@@ -102,6 +209,7 @@ var CreateOptionForm = React.createClass({
                     <Col sm={3}>
                         <FormControl componentClass="select" placeholder="select"
                                      onChange={this.handleDirection}>
+                            <option value="">select</option>
                             <option value="PUT">PUT</option>
                             <option value="CALL">CALL</option>
                         </FormControl>
@@ -114,7 +222,10 @@ var CreateOptionForm = React.createClass({
                     <Col sm={5}><Datetime onChange={this.handleMaturity}/></Col>
                 </FormGroup>
                 <FormGroup>
-                    <Col smOffset={9} sm={2}>
+                    <Col sm={6}>
+                        <SubmitMessage/>
+                    </Col>
+                    <Col smPush={4} sm={2}>
                         <Button type="button" onClick={this.handleSubmit}>
                             <Glyphicon glyph="plus"></Glyphicon>
                         </Button>

@@ -3,7 +3,22 @@ var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 
 var DetailsStore = assign({}, EventEmitter.prototype, {
-    details: {},
+    details: [
+        {id: '', show: false},
+        {underlying: '', show: false},
+        {direction: '', show: false},
+        {maturity: '', show: false},
+        {strike: '', show: false},
+        {notional: '', show: false},
+        {quantity: '', show: false},
+        {type: '', show: false}
+    ],
+    createSubmitState: '',
+    createSubmitMsg: '',
+    optionSubmitState: '',
+    optionSubmitMsg: '',
+    stockSubmitState: '',
+    stockSubmitMsg: '',
     emitChange: function () {
         this.emit('change');
     },
@@ -13,11 +28,32 @@ var DetailsStore = assign({}, EventEmitter.prototype, {
     removeChangeListener: function (callback) {
         this.removeListener('change', callback);
     },
-    getAll: function () {
+    getAllDetails: function () {
         return this.details;
     },
-    update: function (detail) {
-        this.details = detail;
+    getCreateSubmitState: function () {
+        return {submit: this.createSubmitState, msg: this.createSubmitMsg};
+    },
+    getOptionSubmitState: function () {
+        return {submit: this.optionSubmitState, msg: this.optionSubmitMsg};
+    },
+    getStockSubmitState: function () {
+        return {submit: this.stockSubmitState, msg: this.stockSubmitMsg};
+    },
+    update: function (id, detail) {
+        this.details[id] = detail;
+    },
+    updateCreateSubmit: function (item) {
+        this.createSubmitState = item.submit;
+        this.createSubmitMsg = item.msg;
+    },
+    updateOptionSubmit: function (item) {
+        this.optionSubmitState = item.submit;
+        this.optionSubmitMsg = item.msg;
+    },
+    updateStockSubmit: function (item) {
+        this.stockSubmitState = item.submit;
+        this.stockSubmitMsg = item.msg;
     },
     add: function (detail) {
 
@@ -32,6 +68,18 @@ AppDispatcher.register(function (action) {
             break;
         case 'DETAIL_ERASE':
             DetailsStore.update({});
+            DetailsStore.emitChange();
+            break;
+        case 'CREATE_SUBMIT_UPDATE':
+            DetailsStore.updateCreateSubmit(action.data);
+            DetailsStore.emitChange();
+            break;
+        case 'OPTION_SUBMIT_UPDATE':
+            DetailsStore.updateOptionSubmit(action.data);
+            DetailsStore.emitChange();
+            break;
+        case 'STOCK_SUBMIT_UPDATE':
+            DetailsStore.updateStockSubmit(action.data);
             DetailsStore.emitChange();
             break;
     }

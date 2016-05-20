@@ -76,19 +76,19 @@
 	        AppDispatcher.dispatch({
 	            actionType: 'PORTFOLIO_GET_CREATED_TRADES',
 	            data: {
-	                url: "http://karnicki.pl/api/option", options: "trader=defaultUsername"
+	                url: "http://karnicki.pl/api/option", options: "trader=SebastianPaulus"
 	            }
 	        });
 	        AppDispatcher.dispatch({
 	            actionType: 'PORTFOLIO_GET_EXISTING_OPTIONS',
 	            data: {
-	                url: "http://karnicki.pl/api/trade", options: "trader=defaultUsername&TradeType=EuropeanOption"
+	                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=EuropeanOption"
 	            }
 	        });
 	        AppDispatcher.dispatch({
 	            actionType: 'PORTFOLIO_GET_EXISTING_STOCK',
 	            data: {
-	                url: "http://karnicki.pl/api/trade", options: "trader=defaultUsername&TradeType=Stock"
+	                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=Stock"
 	            }
 	        });
 	        WebSocket.init("karnicki.pl/api/WSChat");
@@ -39715,6 +39715,12 @@
 
 	var DetailsStore = assign({}, EventEmitter.prototype, {
 	    details: {},
+	    createSubmitState: '',
+	    createSubmitMsg: '',
+	    optionSubmitState: '',
+	    optionSubmitMsg: '',
+	    stockSubmitState: '',
+	    stockSubmitMsg: '',
 	    emitChange: function emitChange() {
 	        this.emit('change');
 	    },
@@ -39727,8 +39733,29 @@
 	    getAll: function getAll() {
 	        return this.details;
 	    },
+	    getCreateSubmitState: function getCreateSubmitState() {
+	        return { submit: this.createSubmitState, msg: this.createSubmitMsg };
+	    },
+	    getOptionSubmitState: function getOptionSubmitState() {
+	        return { submit: this.optionSubmitState, msg: this.optionSubmitMsg };
+	    },
+	    getStockSubmitState: function getStockSubmitState() {
+	        return { submit: this.stockSubmitState, msg: this.stockSubmitMsg };
+	    },
 	    update: function update(detail) {
 	        this.details = detail;
+	    },
+	    updateCreateSubmit: function updateCreateSubmit(item) {
+	        this.createSubmitState = item.submit;
+	        this.createSubmitMsg = item.msg;
+	    },
+	    updateOptionSubmit: function updateOptionSubmit(item) {
+	        this.optionSubmitState = item.submit;
+	        this.optionSubmitMsg = item.msg;
+	    },
+	    updateStockSubmit: function updateStockSubmit(item) {
+	        this.stockSubmitState = item.submit;
+	        this.stockSubmitMsg = item.msg;
 	    },
 	    add: function add(detail) {}
 	});
@@ -39741,6 +39768,18 @@
 	            break;
 	        case 'DETAIL_ERASE':
 	            DetailsStore.update({});
+	            DetailsStore.emitChange();
+	            break;
+	        case 'CREATE_SUBMIT_UPDATE':
+	            DetailsStore.updateCreateSubmit(action.data);
+	            DetailsStore.emitChange();
+	            break;
+	        case 'OPTION_SUBMIT_UPDATE':
+	            DetailsStore.updateOptionSubmit(action.data);
+	            DetailsStore.emitChange();
+	            break;
+	        case 'STOCK_SUBMIT_UPDATE':
+	            DetailsStore.updateStockSubmit(action.data);
 	            DetailsStore.emitChange();
 	            break;
 	    }
@@ -55664,12 +55703,33 @@
 	var StockTradeTable = __webpack_require__(594);
 	var Tabs = __webpack_require__(169).Tabs;
 	var Tab = __webpack_require__(169).Tab;
+	var AppDispatcher = __webpack_require__(438);
 
 	var PortfolioPage = React.createClass({
 	    displayName: 'PortfolioPage',
 
 	    getInitialState: function getInitialState() {
 	        return { key: 1 };
+	    },
+	    componentDidMount: function componentDidMount() {
+	        AppDispatcher.dispatch({
+	            actionType: 'PORTFOLIO_GET_CREATED_TRADES',
+	            data: {
+	                url: "http://karnicki.pl/api/option", options: "trader=SebastianPaulus"
+	            }
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'PORTFOLIO_GET_EXISTING_OPTIONS',
+	            data: {
+	                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=EuropeanOption"
+	            }
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'PORTFOLIO_GET_EXISTING_STOCK',
+	            data: {
+	                url: "http://karnicki.pl/api/trade", options: "trader=SebastianPaulus&TradeType=Stock"
+	            }
+	        });
 	    },
 	    handleSelect: function handleSelect(key) {
 	        this.setState({ key: key });
@@ -55795,12 +55855,6 @@
 	    createdOptions: {},
 	    tradeOptions: {},
 	    tradeStock: [],
-	    s4: function s4() {
-	        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-	    },
-	    guid: function guid() {
-	        return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' + this.s4() + this.s4() + this.s4();
-	    },
 	    emitChange: function emitChange() {
 	        this.emit('change');
 	    },
@@ -55913,6 +55967,21 @@
 	                counter++;
 	            });
 	        });
+	    },
+	    postCreatedOption: function postCreatedOption(url, item) {
+	        $.post(url, item, function (data) {});
+	    },
+	    postOptionTrade: function postOptionTrade(url, item) {
+	        $.post(url, item, function (data) {});
+	    },
+	    postStockTrade: function postStockTrade(url, item) {
+	        $.post(url, item, function (data) {});
+	    },
+	    validateId: function validateId(id) {
+	        Object.keys(this.createdOptions).forEach(function (key) {
+	            if (key === id) return true;
+	        });
+	        return false;
 	    }
 	});
 
@@ -55940,6 +56009,18 @@
 	            break;
 	        case 'PORTFOLIO_GET_EXISTING_STOCK':
 	            PortfolioStore.loadStockTrade(action.data.url, action.data.options);
+	            PortfolioStore.emitChange();
+	            break;
+	        case 'PORTFOLIO_POST_NEW_CREATED_OPTION':
+	            PortfolioStore.postCreatedOption(action.data.url, action.data.item);
+	            PortfolioStore.emitChange();
+	            break;
+	        case 'PORTFOLIO_POST_NEW_OPTION_TRADE':
+	            PortfolioStore.postOptionTrade(action.data.url, action.data.item);
+	            PortfolioStore.emitChange();
+	            break;
+	        case 'PORTFOLIO_POST_NEW_STOCK_TRADE':
+	            PortfolioStore.postStockTrade(action.data.url, action.data.item);
 	            PortfolioStore.emitChange();
 	            break;
 	    }
@@ -62585,6 +62666,9 @@
 	var MarketDataStore = assign({}, EventEmitter.prototype, {
 	    marketData: {},
 	    chartMarketData: {},
+	    maxChartItems: 49,
+	    chartMinValue: 1000,
+	    chartMaxValue: 0,
 	    emitChange: function emitChange() {
 	        this.emit('change');
 	    },
@@ -62607,33 +62691,40 @@
 	    getChartData: function getChartData() {
 	        return this.chartMarketData;
 	    },
-	    getChartData2: function getChartData2() {
-	        var chartData = [];
-	        var self = this;
-	        Object.keys(this.chartMarketData).forEach(function (key) {
-	            chartData.push(self.chartMarketData[key].values);
-	        });
-	        console.log(util.inspect(chartData, { showHidden: false, depth: null }));
-	        return chartData;
+	    getMin: function getMin() {
+	        return this.chartMinValue;
+	    },
+	    getMax: function getMax() {
+	        return this.chartMaxValue;
 	    },
 	    add: function add(item) {
 	        var id = item.Name;
-	        //console.log('id ' + id);
 	        this.marketData[id] = {
 	            timestamp: item.TimestampUtc,
 	            name: item.Name,
 	            price: item.Price,
 	            oldPrice: item.OldPrice
 	        };
-	        var time = moment(item.TimestampUtc).format('h:mm:ss a');
+	        //var time = moment(item.TimestampUtc).format('h:mm:ss a');
+	        var time = new Date(item.TimestampUtc).getTime();
 	        if (typeof this.chartMarketData[id] === "undefined" || this.chartMarketData[id] === null) {
 	            this.chartMarketData[id] = {
 	                label: id,
-	                values: [{ x: time, y: item.Price }]
+	                values: [{ x: time, y: parseFloat(item.Price) }]
 	            };
+	            var y = parseFloat(item.Price);
+	            if (y > this.chartMaxValue) this.chartMaxValue = y;else if (y < this.chartMinValue) this.chartMinValue = y;
 	        } else {
-	            this.chartMarketData[id].label = id;
-	            this.chartMarketData[id].values.push({ x: time, y: item.Price });
+	            var x = this.chartMarketData[id];
+	            x.label = id;
+	            var y = parseFloat(item.Price);
+	            if (y > this.chartMaxValue) this.chartMaxValue = y;else if (y < this.chartMinValue) this.chartMinValue = y;
+	            if (x.values.length < this.maxChartItems) {
+	                x.values.push({ x: time, y: parseFloat(item.Price) });
+	            } else {
+	                x.values.shift();
+	                x.values.push({ x: time, y: parseFloat(item.Price) });
+	            }
 	        }
 	    }
 	});
@@ -63290,19 +63381,33 @@
 
 	var React = __webpack_require__(1);
 	var LineChart = __webpack_require__(601).LineChart;
+	var Brush = __webpack_require__(601).Brush;
 	var MarketDataStore = __webpack_require__(596);
 	var d3 = __webpack_require__(601).d3;
 	var util = __webpack_require__(597);
+	var moment = __webpack_require__(447);
 
 	function getChartDataFromStore() {
-	    return { data: MarketDataStore.getChartData() };
+	    return MarketDataStore.getChartData();
+	}
+
+	function getMinFromStore() {
+	    return MarketDataStore.getMin();
+	}
+
+	function getMaxFromStore() {
+	    return MarketDataStore.getMax();
 	}
 
 	var MarketHistoryChart = React.createClass({
 	    displayName: 'MarketHistoryChart',
 
 	    getInitialState: function getInitialState() {
-	        return getChartDataFromStore();
+	        return {
+	            data: getChartDataFromStore(),
+	            min: getMinFromStore(),
+	            max: getMaxFromStore()
+	        };
 	    },
 	    labelAccessor: function labelAccessor(stack) {
 	        return stack.label;
@@ -63317,7 +63422,7 @@
 	        return element['y'];
 	    },
 	    tooltipLine: function tooltipLine(label, data) {
-	        return label + "Time: " + data.x + " Price: " + data.y;
+	        return label + " Time: " + moment(data.x).format("MMMM Do YYYY, h:mm:ss a") + " Price: " + parseFloat(data.y).toFixed(2);
 	    },
 	    componentDidMount: function componentDidMount() {
 	        MarketDataStore.addChangeListener(this.onChartDataChange);
@@ -63326,12 +63431,13 @@
 	        MarketDataStore.removeChangeListener(this.onChartDataChange);
 	    },
 	    onChartDataChange: function onChartDataChange() {
-	        this.setState(getChartDataFromStore());
+	        this.setState({ data: getChartDataFromStore(), min: getMinFromStore(), max: getMaxFromStore() });
 	    },
 	    render: function render() {
 	        var x = window.innerWidth * 0.5;
 	        var y = window.innerHeight * 0.5;
-	        var colorScale = d3.scale.category20();
+	        var axisScale = d3.scale.linear().domain([this.state.max + 1, this.state.min - 1]).range([0, y - 100]);
+	        var colorScale = d3.scale.category10();
 	        if (Object.keys(this.state.data).length < 1) {
 	            var data = { label: 'No data available', values: [{ x: 'No data available', y: 1 }] };
 	            return React.createElement(
@@ -63344,7 +63450,7 @@
 	                    shapeColor: "red",
 	                    margin: { top: 50, bottom: 50, left: 50, right: 50 },
 	                    xAxis: { innerTickSize: 6, label: 'Time' },
-	                    yAxis: { label: 'Price' }
+	                    yAxis: { label: 'Price x 100' }
 	                })
 	            );
 	        } else {
@@ -63366,8 +63472,13 @@
 	                    values: this.valuesAccessor,
 	                    shapeColor: "red",
 	                    margin: { top: 50, bottom: 50, left: 50, right: 50 },
-	                    xAxis: { innerTickSize: 6, label: 'Time' },
-	                    yAxis: { label: 'Price' },
+	                    xAxis: { innerTickSize: 6, label: 'Time',
+	                        tickArguments: [6],
+	                        tickFormat: function tickFormat(x) {
+	                            return moment(x).format('h:mm:ss a');
+	                        } },
+	                    yAxis: { label: 'Price', tickArguments: [6] },
+	                    yScale: axisScale,
 	                    colorScale: colorScale,
 	                    tooltipHtml: this.tooltipLine
 	                })
@@ -75665,18 +75776,77 @@
 	var Datetime = __webpack_require__(625);
 	var moment = __webpack_require__(447);
 	var Col = __webpack_require__(169).Col;
+	var Alert = __webpack_require__(169).Alert;
 	var MarketStore = __webpack_require__(596);
+	var DetailsStore = __webpack_require__(437);
 	var AppDispatcher = __webpack_require__(438);
 
 	function getUnderlyingsFromStore() {
 	    return MarketStore.getAllUnderlyings();
 	}
 
+	function getSubmitStateFromStore() {
+	    return DetailsStore.getCreateSubmitState();
+	}
+
+	var SubmitMessage = React.createClass({
+	    displayName: 'SubmitMessage',
+
+	    getInitialState: function getInitialState() {
+	        return getSubmitStateFromStore();
+	    },
+	    onSubmitChange: function onSubmitChange() {
+	        this.setState(getSubmitStateFromStore());
+	    },
+	    changeSubmitForEmpty: function changeSubmitForEmpty() {
+	        AppDispatcher.dispatch({
+	            actionType: 'SUBMIT_UPDATE',
+	            data: {
+	                submit: 'empty',
+	                msg: 'you should not see this'
+	            }
+	        });
+	    },
+	    componentDidMount: function componentDidMount() {
+	        DetailsStore.addChangeListener(this.onSubmitChange);
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        DetailsStore.removeChangeListener(this.onSubmitChange);
+	    },
+	    render: function render() {
+	        if (this.state.submit === 'success') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'success', onDismiss: this.changeSubmitForEmpty },
+	                React.createElement(
+	                    'strong',
+	                    null,
+	                    this.state.msg
+	                )
+	            );
+	        }
+	        if (this.state.submit === 'error') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'danger', onDismiss: this.changeSubmitForEmpty },
+	                React.createElement(
+	                    'strong',
+	                    null,
+	                    this.state.msg
+	                )
+	            );
+	        } else {
+	            return null;
+	        }
+	    }
+	});
+
 	var CreateOptionForm = React.createClass({
 	    displayName: 'CreateOptionForm',
 
 	    getInitialState: function getInitialState() {
 	        return {
+	            url: 'http://karnicki.pl/api/option',
 	            underlying: '',
 	            notional: 0,
 	            maturity: new Date(),
@@ -75686,20 +75856,52 @@
 	        };
 	    },
 	    onMarketDataChange: function onMarketDataChange() {
-	        this.setState(getUnderlyingsFromStore());
+	        this.setState({ underlyings: getUnderlyingsFromStore() });
 	    },
 	    validateNotional: function validateNotional() {
-	        var x = this.state.notional;
-	        if (x >= 1000000 || x <= -1000000) return 'error';
-	        if (!Number.isInteger(x)) return 'error';
+	        var x = parseInt(this.state.notional);
+	        if (!Number.isInteger(x)) return 'error';else return 'success';
 	    },
 	    validateMaturity: function validateMaturity() {
 	        var mat = this.state.maturity;
-	        if (moment().isAfter(mat)) return 'error';
+	        if (moment().isAfter(mat)) return 'error';else return 'success';
 	    },
 	    validateStrike: function validateStrike() {
 	        var x = this.state.optStrike;
-	        if (isNaN(x)) return 'error';
+	        if (isNaN(x)) return 'error';else return 'success';
+	    },
+	    validateSubmit: function validateSubmit() {
+	        if (this.validateNotional() === 'error') {
+	            AppDispatcher.dispatch({
+	                actionType: 'CREATE_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'error',
+	                    msg: 'Notional should be a number.'
+	                }
+	            });
+	            return false;
+	        }
+	        if (this.validateMaturity() === 'error') {
+	            AppDispatcher.dispatch({
+	                actionType: 'CREATE_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'error',
+	                    msg: 'Maturity must be higher than actual date.'
+	                }
+	            });
+	            return false;
+	        }
+	        if (this.validateStrike() === 'error') {
+	            AppDispatcher.dispatch({
+	                actionType: 'CREATE_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'error',
+	                    msg: 'Strike should be a number.'
+	                }
+	            });
+	            return false;
+	        }
+	        return true;
 	    },
 	    handleUnderlying: function handleUnderlying(e) {
 	        this.setState({ underlying: e.target.value });
@@ -75708,7 +75910,8 @@
 	        this.setState({ notional: e.target.value });
 	    },
 	    handleMaturity: function handleMaturity(e) {
-	        this.setState({ maturity: e });
+	        var tmp = moment(e._d).toISOString();
+	        this.setState({ maturity: tmp });
 	    },
 	    handleDirection: function handleDirection(e) {
 	        this.setState({ direction: e.target.value });
@@ -75718,15 +75921,36 @@
 	    },
 	    handleSubmit: function handleSubmit() {
 	        var tmp = {
-	            underlying: this.state.underlying,
-	            maturity: this.state.maturity,
-	            direction: this.state.direction,
-	            price: this.state.optStrike
+	            Underlying: this.state.underlying,
+	            Notional: this.state.notional,
+	            Maturity: this.state.maturity,
+	            CallPutStr: this.state.direction,
+	            Strike: this.state.optStrike,
+	            UserName: 'SebastianPaulus'
 	        };
-	        AppDispatcher.dispatch({
-	            actionType: 'PORTFOLIO_NEW_OPTION',
-	            data: tmp
-	        });
+	        var res = this.validateSubmit();
+	        if (res) {
+	            AppDispatcher.dispatch({
+	                actionType: 'CREATE_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'success',
+	                    msg: 'You have created option successfully.'
+	                }
+	            });
+	            AppDispatcher.dispatch({
+	                actionType: 'PORTFOLIO_POST_NEW_CREATED_OPTION',
+	                data: {
+	                    item: tmp,
+	                    url: this.state.url
+	                }
+	            });
+	            /*AppDispatcher.dispatch({
+	             actionType: 'PORTFOLIO_GET_CREATED_TRADES',
+	             data: {
+	             url: this.state.url, options: "trader=SebastianPaulus"
+	             }
+	             });*/
+	        }
 	    },
 	    componentDidMount: function componentDidMount() {
 	        MarketStore.addChangeListener(this.onMarketDataChange);
@@ -75804,6 +76028,11 @@
 	                            onChange: this.handleDirection },
 	                        React.createElement(
 	                            'option',
+	                            { value: '' },
+	                            'select'
+	                        ),
+	                        React.createElement(
+	                            'option',
 	                            { value: 'PUT' },
 	                            'PUT'
 	                        ),
@@ -75844,7 +76073,12 @@
 	                null,
 	                React.createElement(
 	                    Col,
-	                    { smOffset: 9, sm: 2 },
+	                    { sm: 6 },
+	                    React.createElement(SubmitMessage, null)
+	                ),
+	                React.createElement(
+	                    Col,
+	                    { smPush: 4, sm: 2 },
 	                    React.createElement(
 	                        Button,
 	                        { type: 'button', onClick: this.handleSubmit },
@@ -76807,39 +77041,157 @@
 	var ControlLabel = __webpack_require__(169).ControlLabel;
 	var Button = __webpack_require__(169).Button;
 	var Col = __webpack_require__(169).Col;
+	var Alert = __webpack_require__(169).Alert;
+	var DetailsStore = __webpack_require__(437);
+	var AppDispatcher = __webpack_require__(438);
 	var PortfolioStore = __webpack_require__(554);
 
-	function getUnderlyingFromStore(id) {
-	    return PortfolioStore.getUnderlying(id);
+	function validateItemId(id) {
+	    return PortfolioStore.validateId(id);
 	}
+
+	function getSubmitStateFromStore() {
+	    return DetailsStore.getOptionSubmitState();
+	}
+
+	var SubmitMessage = React.createClass({
+	    displayName: 'SubmitMessage',
+
+	    getInitialState: function getInitialState() {
+	        return getSubmitStateFromStore();
+	    },
+	    onOptionSubmitChange: function onOptionSubmitChange() {
+	        this.setState(getSubmitStateFromStore());
+	    },
+	    changeSubmitForEmpty: function changeSubmitForEmpty() {
+	        AppDispatcher.dispatch({
+	            actionType: 'OPTION_SUBMIT_UPDATE',
+	            data: {
+	                submit: 'empty',
+	                msg: 'you should not see this'
+	            }
+	        });
+	    },
+	    componentDidMount: function componentDidMount() {
+	        DetailsStore.addChangeListener(this.onOptionSubmitChange);
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        DetailsStore.removeChangeListener(this.onOptionSubmitChange);
+	    },
+	    render: function render() {
+	        if (this.state.submit === 'success') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'success', onDismiss: this.changeSubmitForEmpty },
+	                React.createElement(
+	                    'strong',
+	                    null,
+	                    this.state.msg
+	                )
+	            );
+	        }
+	        if (this.state.submit === 'error') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'danger', onDismiss: this.changeSubmitForEmpty },
+	                React.createElement(
+	                    'strong',
+	                    null,
+	                    this.state.msg
+	                )
+	            );
+	        } else {
+	            return null;
+	        }
+	    }
+	});
 
 	var TradeOptionForm = React.createClass({
 	    displayName: 'TradeOptionForm',
 
 	    getInitialState: function getInitialState() {
 	        return {
+	            url: 'http://karnicki.pl/api/trade',
 	            id: '',
 	            underlying: '',
-	            quantity: 0,
-	            submited: false
+	            quantity: 0
 	        };
+	    },
+	    validateId: function validateId() {
+	        if (!validateItemId(this.state.id)) return 'error';else return 'success';
+	    },
+	    validateQuantity: function validateQuantity() {
+	        var x = parseInt(this.state.quantity);
+	        if (!Number.isInteger(x)) return 'error';else return 'success';
+	    },
+	    validateSubmit: function validateSubmit() {
+	        if (this.validateId() === 'error') {
+	            AppDispatcher.dispatch({
+	                actionType: 'OPTION_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'error',
+	                    msg: 'You have inserted wrong ID.'
+	                }
+	            });
+	            return false;
+	        }
+	        if (this.validateQuantity() === 'error') {
+	            AppDispatcher.dispatch({
+	                actionType: 'OPTION_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'error',
+	                    msg: 'Quantity should be positive number.'
+	                }
+	            });
+	            return false;
+	        }
+	        return true;
 	    },
 	    handleID: function handleID(e) {
 	        this.setState({ id: e.target.value });
-	        var x = getUnderlyingFromStore(e.target.value);
-	        if (typeof x == "undefined") {
-	            this.setState({ underlying: '' });
-	        } else {
-	            this.setState({ underlying: x });
-	        }
 	    },
-	    handleUnderlying: function handleUnderlying(e) {
-	        this.setState({ underlying: e.target.value });
+	    handleType: function handleType(e) {
+	        if (e.target.value === 'BUY') {
+	            this.setState({ quantity: this.state.quantity });
+	        } else {
+	            this.setState({ quantity: -this.state.quantity });
+	        }
 	    },
 	    handleQuantity: function handleQuantity(e) {
 	        this.setState({ quantity: e.target.value });
 	    },
-	    handleSubmit: function handleSubmit() {},
+	    handleSubmit: function handleSubmit() {
+	        var tmp = {
+	            Underlying: this.state.underlying,
+	            OptionId: this.state.id,
+	            Quantity: this.state.quantity,
+	            TradeType: 'EuropeanOption',
+	            UserName: 'SebastianPaulus'
+	        };
+	        var res = this.validateSubmit();
+	        if (res) {
+	            AppDispatcher.dispatch({
+	                actionType: 'OPTION_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'success',
+	                    msg: 'You have executed option trade successfully.'
+	                }
+	            });
+	            AppDispatcher.dispatch({
+	                actionType: 'PORTFOLIO_POST_NEW_OPTION_TRADE',
+	                data: {
+	                    item: tmp,
+	                    url: this.state.url
+	                }
+	            });
+	            /*AppDispatcher.dispatch({
+	             actionType: 'PORTFOLIO_GET_EXISTING_OPTIONS',
+	             data: {
+	             url: this.state.url, options: "trader=SebastianPaulus&TradeType=EuropeanOption"
+	             }
+	             });*/
+	        }
+	    },
 	    render: function render() {
 	        return React.createElement(
 	            Form,
@@ -76873,16 +77225,30 @@
 	                React.createElement(
 	                    Col,
 	                    { componentClass: ControlLabel, sm: 3 },
-	                    'Underlying'
+	                    'Type'
 	                ),
 	                React.createElement(
 	                    Col,
 	                    { sm: 5 },
 	                    React.createElement(
-	                        FormControl.Static,
-	                        {
-	                            onChange: this.handleUnderlying },
-	                        this.state.underlying
+	                        FormControl,
+	                        { componentClass: 'select', placeholder: 'select',
+	                            onChange: this.handleType },
+	                        React.createElement(
+	                            'option',
+	                            { value: '' },
+	                            'select'
+	                        ),
+	                        React.createElement(
+	                            'option',
+	                            { value: 'BUY' },
+	                            'BUY'
+	                        ),
+	                        React.createElement(
+	                            'option',
+	                            { value: 'SELL' },
+	                            'SELL'
+	                        )
 	                    )
 	                )
 	            ),
@@ -76902,7 +77268,12 @@
 	            ),
 	            React.createElement(
 	                Col,
-	                { smOffset: 9, sm: 2 },
+	                { sm: 6 },
+	                React.createElement(SubmitMessage, null)
+	            ),
+	            React.createElement(
+	                Col,
+	                { smPush: 4, sm: 2 },
 	                React.createElement(
 	                    Button,
 	                    { type: 'button', onClick: this.handleSubmit },
@@ -76928,24 +77299,140 @@
 	var ControlLabel = __webpack_require__(169).ControlLabel;
 	var Button = __webpack_require__(169).Button;
 	var Col = __webpack_require__(169).Col;
+	var Alert = __webpack_require__(169).Alert;
+	var DetailsStore = __webpack_require__(437);
+	var MarketStore = __webpack_require__(596);
+	var AppDispatcher = __webpack_require__(438);
+
+	function getUnderlyingsFromStore() {
+	    return MarketStore.getAllUnderlyings();
+	}
+
+	function getSubmitStateFromStore() {
+	    return DetailsStore.getStockSubmitState();
+	}
+
+	var SubmitMessage = React.createClass({
+	    displayName: 'SubmitMessage',
+
+	    getInitialState: function getInitialState() {
+	        return getSubmitStateFromStore();
+	    },
+	    onStockSubmitChange: function onStockSubmitChange() {
+	        this.setState(getSubmitStateFromStore());
+	    },
+	    changeSubmitForEmpty: function changeSubmitForEmpty() {
+	        AppDispatcher.dispatch({
+	            actionType: 'STOCK_SUBMIT_UPDATE',
+	            data: {
+	                submit: 'empty',
+	                msg: 'you should not see this'
+	            }
+	        });
+	    },
+	    componentDidMount: function componentDidMount() {
+	        DetailsStore.addChangeListener(this.onStockSubmitChange);
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        DetailsStore.removeChangeListener(this.onStockSubmitChange);
+	    },
+	    render: function render() {
+	        if (this.state.submit === 'success') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'success', onDismiss: this.changeSubmitForEmpty },
+	                React.createElement(
+	                    'strong',
+	                    null,
+	                    this.state.msg
+	                )
+	            );
+	        }
+	        if (this.state.submit === 'error') {
+	            return React.createElement(
+	                Alert,
+	                { bsStyle: 'danger', onDismiss: this.changeSubmitForEmpty },
+	                React.createElement(
+	                    'strong',
+	                    null,
+	                    this.state.msg
+	                )
+	            );
+	        } else {
+	            return null;
+	        }
+	    }
+	});
 
 	var TradeStockForm = React.createClass({
 	    displayName: 'TradeStockForm',
 
 	    getInitialState: function getInitialState() {
 	        return {
-	            underlying: '',
-	            quantity: 0,
-	            submited: false
+	            url: 'http://karnicki.pl/api/trade',
+	            underlyings: getUnderlyingsFromStore(),
+	            quantity: 0
 	        };
-	    }, handleUnderlying: function handleUnderlying(e) {
+	    },
+	    validateQuantity: function validateQuantity() {
+	        var x = parseInt(this.state.quantity);
+	        if (!Number.isInteger(x)) return 'error';else return 'success';
+	    },
+	    validateSubmit: function validateSubmit() {
+	        if (this.validateQuantity() === 'error') return false;else return true;
+	    },
+	    handleUnderlying: function handleUnderlying(e) {
 	        this.setState({ underlying: e.target.value });
 	    },
 	    handleQuantity: function handleQuantity(e) {
 	        this.setState({ quantity: e.target.value });
 	    },
-	    handleSubmit: function handleSubmit() {},
+	    handleType: function handleType(e) {
+	        if (e.target.value === 'BUY') {
+	            this.setState({ quantity: this.state.quantity });
+	        } else {
+	            this.setState({ quantity: -this.state.quantity });
+	        }
+	    },
+	    handleSubmit: function handleSubmit() {
+	        var tmp = {
+	            Underlying: this.state.underlying,
+	            Quantity: this.state.quantity,
+	            TradeType: 'Stock',
+	            UserName: 'SebastianPaulus'
+	        };
+	        var res = this.validateSubmit();
+	        if (res) {
+	            AppDispatcher.dispatch({
+	                actionType: 'STOCK_SUBMIT_UPDATE',
+	                data: {
+	                    submit: 'success',
+	                    msg: 'You have executed stock trade successfully.'
+	                }
+	            });
+	            AppDispatcher.dispatch({
+	                actionType: 'PORTFOLIO_POST_NEW_STOCK_TRADE',
+	                data: {
+	                    item: tmp,
+	                    url: this.state.url
+	                }
+	            });
+	            /*AppDispatcher.dispatch({
+	             actionType: 'PORTFOLIO_GET_EXISTING_STOCK',
+	             data: {
+	             url: this.state.url, options: "trader=SebastianPaulus&TradeType=Stock"
+	             }
+	             });*/
+	        }
+	    },
 	    render: function render() {
+	        var options = this.state.underlyings.map(function (item) {
+	            return React.createElement(
+	                'option',
+	                { value: item },
+	                item
+	            );
+	        });
 	        return React.createElement(
 	            Form,
 	            { horizontal: true, className: 'tradeOptionForm' },
@@ -76969,7 +77456,16 @@
 	                React.createElement(
 	                    Col,
 	                    { sm: 5 },
-	                    React.createElement(FormControl, { type: 'text', onChange: this.handleUnderlying })
+	                    React.createElement(
+	                        FormControl,
+	                        { componentClass: 'select', onChange: this.handleUnderlying },
+	                        React.createElement(
+	                            'option',
+	                            { value: '' },
+	                            'select'
+	                        ),
+	                        options
+	                    )
 	                )
 	            ),
 	            React.createElement(
@@ -76987,8 +77483,46 @@
 	                )
 	            ),
 	            React.createElement(
+	                FormGroup,
+	                { controlID: 'formType', bsSize: 'small' },
+	                React.createElement(
+	                    Col,
+	                    { componentClass: ControlLabel, sm: 3 },
+	                    'Type'
+	                ),
+	                React.createElement(
+	                    Col,
+	                    { sm: 5 },
+	                    React.createElement(
+	                        FormControl,
+	                        { componentClass: 'select', placeholder: 'select',
+	                            onChange: this.handleType },
+	                        React.createElement(
+	                            'option',
+	                            { value: '' },
+	                            'select'
+	                        ),
+	                        React.createElement(
+	                            'option',
+	                            { value: 'BUY' },
+	                            'BUY'
+	                        ),
+	                        React.createElement(
+	                            'option',
+	                            { value: 'SELL' },
+	                            'SELL'
+	                        )
+	                    )
+	                )
+	            ),
+	            React.createElement(
 	                Col,
-	                { smOffset: 9, sm: 2 },
+	                { sm: 6 },
+	                React.createElement(SubmitMessage, null)
+	            ),
+	            React.createElement(
+	                Col,
+	                { smPush: 4, sm: 2 },
 	                React.createElement(
 	                    Button,
 	                    { type: 'button', onClick: this.handleSubmit },
