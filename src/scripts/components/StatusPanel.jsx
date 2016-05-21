@@ -44,7 +44,7 @@ var StatusPanel = React.createClass({
         return (
             <div className="container" id="statusBar">
                 <div className="statusPanel pvPanel">
-                    <CustomPanel name="PV" initialValue={1.5}/>
+                    <CustomPanel name="PV" initialValue={0}/>
                 </div>
                 <div className="statusPanel deltaPanel">
                     < CustomPanel name="Delta" initialValue={-1.5}/>

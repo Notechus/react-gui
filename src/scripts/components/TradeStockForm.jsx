@@ -39,6 +39,9 @@ var SubmitMessage = React.createClass({
     },
     componentWillUnmount: function () {
         DetailsStore.removeChangeListener(this.onStockSubmitChange);
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_RESET'
+        });
     },
     render: function () {
         if (this.state.submit === 'success') {
@@ -80,16 +83,46 @@ var TradeStockForm = React.createClass({
     },
     handleUnderlying: function (e) {
         this.setState({underlying: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'UNDERLYING',
+            context: 'TRADE_STOCK'
+        });
     },
     handleQuantity: function (e) {
         this.setState({quantity: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'QUANTITY',
+            context: 'TRADE_STOCK'
+        });
     },
     handleType: function (e) {
         if (e.target.value === 'BUY') {
-            this.setState({quantity: this.state.quantity});
+            this.setState({quantity: -this.state.quantity});
         } else {
             this.setState({quantity: -this.state.quantity});
         }
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: this.state.quantity, show: show},
+            id: 'QUANTITY',
+            context: 'TRADE_STOCK'
+        });
     },
     handleSubmit: function () {
         var tmp = {
@@ -106,6 +139,9 @@ var TradeStockForm = React.createClass({
                     submit: 'success',
                     msg: 'You have executed stock trade successfully.'
                 }
+            });
+            AppDispatcher.dispatch({
+                actionType: 'DETAIL_RESET'
             });
             AppDispatcher.dispatch({
                 actionType: 'PORTFOLIO_POST_NEW_STOCK_TRADE',

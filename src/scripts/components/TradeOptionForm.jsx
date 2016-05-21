@@ -70,6 +70,11 @@ var TradeOptionForm = React.createClass({
             quantity: 0
         };
     },
+    componentWillUnmount: function () {
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_RESET'
+        });
+    },
     validateId: function () {
         if (!validateItemId(this.state.id)) return 'error';
         else return 'success';
@@ -104,16 +109,46 @@ var TradeOptionForm = React.createClass({
     },
     handleID: function (e) {
         this.setState({id: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'ID',
+            context: 'TRADE_OPTION'
+        });
     },
     handleType: function (e) {
         if (e.target.value === 'BUY') {
-            this.setState({quantity: this.state.quantity});
+            this.setState({quantity: -this.state.quantity});
         } else {
             this.setState({quantity: -this.state.quantity});
         }
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: this.state.quantity, show: show},
+            id: 'QUANTITY',
+            context: 'TRADE_OPTION'
+        });
     },
     handleQuantity: function (e) {
         this.setState({quantity: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'QUANTITY',
+            context: 'TRADE_OPTION'
+        });
     },
     handleSubmit: function () {
         var tmp = {
@@ -131,6 +166,9 @@ var TradeOptionForm = React.createClass({
                     submit: 'success',
                     msg: 'You have executed option trade successfully.'
                 }
+            });
+            AppDispatcher.dispatch({
+                actionType: 'DETAIL_RESET'
             });
             AppDispatcher.dispatch({
                 actionType: 'PORTFOLIO_POST_NEW_OPTION_TRADE',

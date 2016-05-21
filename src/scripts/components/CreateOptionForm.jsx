@@ -129,19 +129,69 @@ var CreateOptionForm = React.createClass({
     },
     handleUnderlying: function (e) {
         this.setState({underlying: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'UNDERLYING',
+            context: 'CREATE_OPTION'
+        });
     },
     handleNotional: function (e) {
         this.setState({notional: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'NOTIONAL',
+            context: 'CREATE_OPTION'
+        });
     },
     handleMaturity: function (e) {
         var tmp = moment(e._d).toISOString();
         this.setState({maturity: tmp});
+        var show = true;
+        if (tmp === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: moment(e._d).format("MM/DD/YY h:mm a"), show: show},
+            id: 'MATURITY',
+            context: 'CREATE_OPTION'
+        });
     },
     handleDirection: function (e) {
         this.setState({direction: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'DIRECTION',
+            context: 'CREATE_OPTION'
+        });
     },
     handleStrike: function (e) {
         this.setState({optStrike: e.target.value});
+        var show = true;
+        if (e.target.value === '') {
+            show = false;
+        }
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_UPDATE',
+            data: {details: e.target.value, show: show},
+            id: 'STRIKE',
+            context: 'CREATE_OPTION'
+        });
     },
     handleSubmit: function () {
         var tmp = {
@@ -160,6 +210,9 @@ var CreateOptionForm = React.createClass({
                     submit: 'success',
                     msg: 'You have created option successfully.'
                 }
+            });
+            AppDispatcher.dispatch({
+                actionType: 'DETAIL_RESET'
             });
             AppDispatcher.dispatch({
                 actionType: 'PORTFOLIO_POST_NEW_CREATED_OPTION',
@@ -181,6 +234,9 @@ var CreateOptionForm = React.createClass({
     },
     componentWillUnmount: function () {
         MarketStore.removeChangeListener(this.onMarketDataChange);
+        AppDispatcher.dispatch({
+            actionType: 'DETAIL_RESET'
+        });
     },
     render: function () {
         var options = this.state.underlyings.map(function (item) {
