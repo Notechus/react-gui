@@ -39679,7 +39679,7 @@
 	                React.createElement(
 	                    'strong',
 	                    null,
-	                    item.id + ':'
+	                    item.id + ': '
 	                ),
 	                item.details
 	            );
@@ -56462,6 +56462,9 @@
 	var PortfolioStore = __webpack_require__(557);
 	var BootstrapTable = __webpack_require__(558).BootstrapTable;
 	var TableHeaderColumn = __webpack_require__(558).TableHeaderColumn;
+	var AppDispatcher = __webpack_require__(438);
+	var moment = __webpack_require__(450);
+	var util = __webpack_require__(444);
 
 	function getCOptionsFromStore() {
 	    return PortfolioStore.getAllCreatedOptions();
@@ -56482,6 +56485,38 @@
 	    componentWillUnmount: function componentWillUnmount() {
 	        PortfolioStore.removeChangeListener(this.onOptionsChange);
 	    },
+	    onRowClick: function onRowClick(row) {
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.id, show: true },
+	            id: 'ID',
+	            context: 'CREATE_OPTION_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.underlying, show: true },
+	            id: 'UNDERLYING',
+	            context: 'CREATE_OPTION_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.direction, show: true },
+	            id: 'DIRECTION',
+	            context: 'CREATE_OPTION_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: moment(row.rawTime).format("MM/DD/YYYY h:mm a"), show: true },
+	            id: 'MATURITY',
+	            context: 'CREATE_OPTION_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.price, show: true },
+	            id: 'STRIKE',
+	            context: 'CREATE_OPTION_TABLE'
+	        });
+	    },
 	    render: function render() {
 	        var y = window.innerHeight * 0.4;
 	        return React.createElement(
@@ -56490,7 +56525,7 @@
 	            React.createElement(
 	                BootstrapTable,
 	                { data: this.state.options, striped: true, hover: true, condensed: true,
-	                    height: y.toString() },
+	                    height: y.toString(), options: { onRowClick: this.onRowClick } },
 	                React.createElement(
 	                    TableHeaderColumn,
 	                    { dataField: 'counter', dataSort: true, width: '70' },
@@ -56538,6 +56573,7 @@
 	var EventEmitter = __webpack_require__(442).EventEmitter;
 	var assign = __webpack_require__(443);
 	var moment = __webpack_require__(450);
+	var util = __webpack_require__(444);
 
 	var PortfolioStore = assign({}, EventEmitter.prototype, {
 	    createdOptions: {},
@@ -56619,7 +56655,8 @@
 	                    underlying: item.Underlying,
 	                    direction: item.CallPutStr,
 	                    maturity: moment(item.Maturity).format('MMMM Do YYYY, h:mm:ss a'),
-	                    price: item.Strike
+	                    price: item.Strike,
+	                    rawTime: item.Maturity
 	                };
 	            });
 	        });
@@ -56643,11 +56680,12 @@
 	    loadStockTrade: function loadStockTrade(url, options) {
 	        var self = this;
 	        var counter = 1;
+	        var trades = [];
 	        $.getJSON(url, options, function (result) {
 	            var res = jQuery.parseJSON(result);
 	            res.forEach(function (item) {
 	                var id = item.Id;
-	                self.tradeStock.push({
+	                trades.push({
 	                    counter: counter,
 	                    underlying: item.Underlying,
 	                    quantity: item.Quantity
@@ -56655,15 +56693,16 @@
 	                counter++;
 	            });
 	        });
+	        this.tradeStock = trades;
 	    },
 	    postCreatedOption: function postCreatedOption(url, item) {
-	        $.post(url, item, function (data) {});
+	        $.post(url, item).done(function (data) {});
 	    },
 	    postOptionTrade: function postOptionTrade(url, item) {
 	        $.post(url, item, function (data) {});
 	    },
 	    postStockTrade: function postStockTrade(url, item) {
-	        $.post(url, item, function (data) {});
+	        $.post(url, item).done(function (data) {});
 	    },
 	    validateId: function validateId(id) {
 	        Object.keys(this.createdOptions).forEach(function (key) {
@@ -63126,6 +63165,7 @@
 	var PortfolioStore = __webpack_require__(557);
 	var BootstrapTable = __webpack_require__(558).BootstrapTable;
 	var TableHeaderColumn = __webpack_require__(558).TableHeaderColumn;
+	var AppDispatcher = __webpack_require__(438);
 
 	function getTOptionsFromStore() {
 	    return PortfolioStore.getAllOption();
@@ -63146,12 +63186,32 @@
 	    componentWillUnmount: function componentWillUnmount() {
 	        PortfolioStore.removeChangeListener(this.onTradeChange);
 	    },
+	    onRowClick: function onRowClick(row) {
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.id, show: true },
+	            id: 'ID',
+	            context: 'TRADE_OPTION_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.underlying, show: true },
+	            id: 'UNDERLYING',
+	            context: 'TRADE_OPTION_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.quantity, show: true },
+	            id: 'QUANTITY',
+	            context: 'TRADE_OPTION_TABLE'
+	        });
+	    },
 	    render: function render() {
 	        var y = window.innerHeight * 0.4;
 	        return React.createElement(
 	            BootstrapTable,
 	            { data: this.state.options, striped: true, hover: true, condensed: true,
-	                height: y.toString() },
+	                height: y.toString(), options: { onRowClick: this.onRowClick } },
 	            React.createElement(
 	                TableHeaderColumn,
 	                { dataField: 'counter', dataSort: true, width: '70' },
@@ -63188,6 +63248,7 @@
 	var PortfolioStore = __webpack_require__(557);
 	var BootstrapTable = __webpack_require__(558).BootstrapTable;
 	var TableHeaderColumn = __webpack_require__(558).TableHeaderColumn;
+	var AppDispatcher = __webpack_require__(438);
 
 	function getStockTradesFromStore() {
 	    return PortfolioStore.getAllStock();
@@ -63208,12 +63269,26 @@
 	    componentWillUnmount: function componentWillUnmount() {
 	        PortfolioStore.removeChangeListener(this.onStockChange);
 	    },
+	    onRowClick: function onRowClick(row) {
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.underlying, show: true },
+	            id: 'UNDERLYING',
+	            context: 'TRADE_STOCK_TABLE'
+	        });
+	        AppDispatcher.dispatch({
+	            actionType: 'DETAIL_UPDATE',
+	            data: { details: row.quantity, show: true },
+	            id: 'QUANTITY',
+	            context: 'TRADE_STOCK_TABLE'
+	        });
+	    },
 	    render: function render() {
 	        var y = window.innerHeight * 0.4;
 	        return React.createElement(
 	            BootstrapTable,
 	            { data: this.state.options, striped: true, hover: true, condensed: true,
-	                height: y.toString() },
+	                height: y.toString(), options: { onRowClick: this.onRowClick } },
 	            React.createElement(
 	                TableHeaderColumn,
 	                { dataField: 'counter', isKey: true, dataSort: true, width: '70' },
@@ -63248,6 +63323,8 @@
 	var Row = __webpack_require__(169).Row;
 	var MarketStore = __webpack_require__(599);
 	var MarketHistoryChart = __webpack_require__(600);
+	var AppDispatcher = __webpack_require__(438);
+	var util = __webpack_require__(444);
 
 	function getStateFromStore() {
 	    return {
@@ -63269,6 +63346,9 @@
 	    },
 	    componentWillUnmount: function componentWillUnmount() {
 	        MarketStore.removeChangeListener(this.onMarketChange);
+	    },
+	    onButtonClick: function onButtonClick(item) {
+	        console.log(util.inspect(item));
 	    },
 	    render: function render() {
 	        var stocks = [];
@@ -63348,7 +63428,6 @@
 	var AppDispatcher = __webpack_require__(438);
 	var EventEmitter = __webpack_require__(442).EventEmitter;
 	var assign = __webpack_require__(443);
-	var moment = __webpack_require__(450);
 	var util = __webpack_require__(444);
 
 	var MarketDataStore = assign({}, EventEmitter.prototype, {
@@ -63393,7 +63472,6 @@
 	            price: item.Price,
 	            oldPrice: item.OldPrice
 	        };
-	        //var time = moment(item.TimestampUtc).format('h:mm:ss a');
 	        var time = new Date(item.TimestampUtc).getTime();
 	        if (typeof this.chartMarketData[id] === "undefined" || this.chartMarketData[id] === null) {
 	            this.chartMarketData[id] = {
@@ -75855,7 +75933,7 @@
 	    },
 	    changeSubmitForEmpty: function changeSubmitForEmpty() {
 	        AppDispatcher.dispatch({
-	            actionType: 'SUBMIT_UPDATE',
+	            actionType: 'CREATE_SUBMIT_UPDATE',
 	            data: {
 	                submit: 'empty',
 	                msg: 'you should not see this'
@@ -76065,9 +76143,6 @@
 	    },
 	    componentWillUnmount: function componentWillUnmount() {
 	        MarketStore.removeChangeListener(this.onMarketDataChange);
-	        AppDispatcher.dispatch({
-	            actionType: 'DETAIL_RESET'
-	        });
 	    },
 	    render: function render() {
 	        var options = this.state.underlyings.map(function (item) {
@@ -77228,11 +77303,6 @@
 	            quantity: 0
 	        };
 	    },
-	    componentWillUnmount: function componentWillUnmount() {
-	        AppDispatcher.dispatch({
-	            actionType: 'DETAIL_RESET'
-	        });
-	    },
 	    validateId: function validateId() {
 	        if (!validateItemId(this.state.id)) return 'error';else return 'success';
 	    },
@@ -77484,9 +77554,6 @@
 	    },
 	    componentWillUnmount: function componentWillUnmount() {
 	        DetailsStore.removeChangeListener(this.onStockSubmitChange);
-	        AppDispatcher.dispatch({
-	            actionType: 'DETAIL_RESET'
-	        });
 	    },
 	    render: function render() {
 	        if (this.state.submit === 'success') {

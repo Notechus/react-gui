@@ -21,7 +21,7 @@ var DetailsPanel = React.createClass({
     },
     render: function () {
         var details = this.state.details.map(function (item) {
-            return (<p><strong>{item.id + ':'}</strong>{item.details}</p>)
+            return (<p><strong>{item.id + ': '}</strong>{item.details}</p>)
         });
         return (
             <div className="detailsPanel">

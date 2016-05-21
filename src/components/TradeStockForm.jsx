@@ -39,9 +39,6 @@ var SubmitMessage = React.createClass({
     },
     componentWillUnmount: function () {
         DetailsStore.removeChangeListener(this.onStockSubmitChange);
-        AppDispatcher.dispatch({
-            actionType: 'DETAIL_RESET'
-        });
     },
     render: function () {
         if (this.state.submit === 'success') {

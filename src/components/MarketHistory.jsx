@@ -5,6 +5,8 @@ var Glyphicon = require('react-bootstrap').Glyphicon;
 var Row = require('react-bootstrap').Row;
 var MarketStore = require('../stores/MarketDataStore');
 var MarketHistoryChart = require('./MarketHistoryChart');
+var AppDispatcher = require('../dispatcher/AppDispatcher');
+var util = require('util');
 
 function getStateFromStore() {
     return {
@@ -24,6 +26,9 @@ var ActualStockHistory = React.createClass({
         },
         componentWillUnmount: function () {
             MarketStore.removeChangeListener(this.onMarketChange);
+        },
+        onButtonClick: function (item) {
+            console.log(util.inspect(item));
         },
         render: function () {
             var stocks = [];

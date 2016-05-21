@@ -2,6 +2,7 @@ var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
 var moment = require('moment');
+var util = require('util');
 
 var PortfolioStore = assign({}, EventEmitter.prototype, {
     createdOptions: {},
@@ -83,7 +84,8 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
                     underlying: item.Underlying,
                     direction: item.CallPutStr,
                     maturity: moment(item.Maturity).format('MMMM Do YYYY, h:mm:ss a'),
-                    price: item.Strike
+                    price: item.Strike,
+                    rawTime: item.Maturity
                 };
             });
         });
@@ -107,11 +109,12 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
     loadStockTrade: function (url, options) {
         var self = this;
         var counter = 1;
+        var trades = [];
         $.getJSON(url, options, function (result) {
             var res = jQuery.parseJSON(result);
             res.forEach(function (item) {
                 var id = item.Id;
-                self.tradeStock.push({
+                trades.push({
                     counter: counter,
                     underlying: item.Underlying,
                     quantity: item.Quantity
@@ -119,19 +122,18 @@ var PortfolioStore = assign({}, EventEmitter.prototype, {
                 counter++;
             });
         });
+        this.tradeStock = trades;
     },
     postCreatedOption: function (url, item) {
-        $.post(url, item, function (data) {
+        $.post(url, item).done(function (data) {
         });
     },
     postOptionTrade: function (url, item) {
         $.post(url, item, function (data) {
-
         });
     },
     postStockTrade: function (url, item) {
-        $.post(url, item, function (data) {
-
+        $.post(url, item).done(function (data) {
         });
     },
     validateId: function (id) {

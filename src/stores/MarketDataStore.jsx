@@ -1,7 +1,6 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var assign = require('object-assign');
-var moment = require('moment');
 var util = require('util');
 
 var MarketDataStore = assign({}, EventEmitter.prototype, {
@@ -46,7 +45,6 @@ var MarketDataStore = assign({}, EventEmitter.prototype, {
             price: item.Price,
             oldPrice: item.OldPrice
         };
-        //var time = moment(item.TimestampUtc).format('h:mm:ss a');
         var time = new Date(item.TimestampUtc).getTime();
         if (typeof this.chartMarketData[id] === "undefined" || this.chartMarketData[id] === null) {
             this.chartMarketData[id] = {

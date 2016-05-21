@@ -70,11 +70,6 @@ var TradeOptionForm = React.createClass({
             quantity: 0
         };
     },
-    componentWillUnmount: function () {
-        AppDispatcher.dispatch({
-            actionType: 'DETAIL_RESET'
-        });
-    },
     validateId: function () {
         if (!validateItemId(this.state.id)) return 'error';
         else return 'success';

@@ -30,7 +30,7 @@ var SubmitMessage = React.createClass({
     },
     changeSubmitForEmpty: function () {
         AppDispatcher.dispatch({
-            actionType: 'SUBMIT_UPDATE',
+            actionType: 'CREATE_SUBMIT_UPDATE',
             data: {
                 submit: 'empty',
                 msg: 'you should not see this'
@@ -234,9 +234,6 @@ var CreateOptionForm = React.createClass({
     },
     componentWillUnmount: function () {
         MarketStore.removeChangeListener(this.onMarketDataChange);
-        AppDispatcher.dispatch({
-            actionType: 'DETAIL_RESET'
-        });
     },
     render: function () {
         var options = this.state.underlyings.map(function (item) {
