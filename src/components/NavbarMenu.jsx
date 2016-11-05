@@ -22,8 +22,7 @@ const NavbarMenu = React.createClass({
                     <NavItem eventKey={3} onSelect={this.changePageView} href="#">Trade Store</NavItem>
                 </Nav>
                 <Nav pullRight>
-                    <Navbar.Text>You are logged as: <strong>Trader</strong> </Navbar.Text>
-                    <Avatar fluid/>
+                    <Navbar.Text>You are logged as: <strong>Trader</strong></Navbar.Text>
                 </Nav>
             </Navbar>);
     }

@@ -14,21 +14,21 @@ var CustomPanel = React.createClass({
         var delta = this.state.value - this.state.previousValue;
         if (delta > 0) {
             return (
-                <Button bsSize="large" bsStyle='success'>
+                <Button bsSize="large" bsStyle='link'>
                     &nbsp;{this.props.name}&nbsp;<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
                     <Glyphicon glyph="arrow-up"></Glyphicon>
                 </Button>
             );
         } else if (delta < 0) {
             return (
-                <Button bsSize="large" bsStyle='danger'>
+                <Button bsSize="large" bsStyle='link'>
                     &nbsp;{this.props.name}&nbsp;<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
                     <Glyphicon glyph="arrow-down"></Glyphicon>
                 </Button>
             );
         } else {
             return (
-                <Button bsSize="large" bsStyle='primary'>
+                <Button bsSize="large" bsStyle='link'>
                     {this.props.name}<br/>{parseFloat(this.state.value).toFixed(2)}&nbsp;
                 </Button>
             );
@@ -44,10 +44,10 @@ var StatusPanel = React.createClass({
         return (
             <div className="container" id="statusBar">
                 <div className="statusPanel pvPanel">
-                    <CustomPanel name="PV" initialValue={0}/>
+                    <CustomPanel name="PV" initialValue={25.8}/>
                 </div>
                 <div className="statusPanel deltaPanel">
-                    < CustomPanel name="Delta" initialValue={-1.5}/>
+                    < CustomPanel name="Delta" initialValue={-17.5}/>
                 </div >
                 <div>
                     <DetailsPanel/>

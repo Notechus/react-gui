@@ -4,134 +4,95 @@ body {
     background-color: #cccccc;
 }
 
-.avatar {
-    width: 50px;
-    height: 50px;
-    float: left;
-    margin-right: 5px;
-}
-
 #brand-name {
     font-family: Satisfy, serif;
-}
-
-.logout-button {
-    overflow: hidden;
-    display: inline-block;
-    margin-top: 10px;
-    margin-left: 5px;
-    margin-right: 5px;
-}
-
-.right-menu {
-    overflow: hidden;
-    float: right;
 }
 
 #mainBody {
     position: absolute;
     width: 74%;
     height: 90%;
-    left: 5px;
-    bottom: 10px;
+    margin-left: 0.5%;
+    margin-bottom: 1%;
     background-color: whitesmoke;
     border-radius: 5px;
 }
 
 #clockBar {
     position: absolute;
-    width: 25%;
+    width: 24.5%;
     height: 35%;
-    right: 5px;
+    right: 0.5%;
     background-color: whitesmoke;
     border-radius: 5px;
+    justify-content: center;
+    align-content: center;
 }
 
 #statusBar {
     position: absolute;
-    padding: 10px;
-    width: 25%;
+    padding: 1%;
+    width: 24.5%;
     height: 25%;
-    right: 5px;
-    bottom: 10px;
+    right: 0.5%;
+    top: 48%;
     background-color: whitesmoke;
     border-radius: 5px;
 }
 
 .statusPanel {
     position: absolute;
-    padding: 10px;
+    padding: 1%;
 }
 
 .pvPanel {
-    left: 10px;
-    top: 10px;
+    left: 2%;
+    top: 2%;
 }
 
 .deltaPanel {
-    left: 10px;
+    left: 2%;
     top: 50%;
 }
 
 .detailsPanel {
     position: absolute;
     width: 60%;
-    height: 90%;
+    height: 95.6%;
     border: 1px outset white;
     border-radius: 3px;
-    top: 10px;
-    right: 10px;
-    padding-left: 15px;
-    padding-top: 10px;
+    top: 2%;
+    right: 1%;
 }
 
 .clock {
     font-family: courier, monospace;
     text-align: center;
-    font-size: 3vh;
+    font-size: 100%;
 }
 
 .clockCity {
     font-family: courier, monospace;
     text-align: center;
-    font-size: 3vh;
+    font-size: 100%;
 }
 
 .clockDefaults {
-    position: inherit;
-    width: 46%;
-    height: 46%;
+    position: relative;
+    /*width: 75%;*/
     background-color: lightgray;
     border-radius: 3px;
-    padding: 5px;
+    padding: 2%;
+    margin: 2%;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #fff;
     text-shadow: 0 1px 1px #fff;
     box-shadow: 2px 2px 1px black;
     display: flex;
+    clear: both;
     justify-content: center;
     align-content: center;
     flex-direction: column;
-}
-
-#yourClock {
-    left: 10px;
-    top: 10px;
-}
-
-#tokClock {
-    left: 10px;
-    bottom: 10px;
-}
-
-#nyClock {
-    right: 10px;
-    top: 10px;
-}
-
-#lonClock {
-    right: 10px;
-    bottom: 10px;
 }
 
 .actualStockPrice {
@@ -147,20 +108,20 @@ body {
 }
 
 .createOption {
-    left: 10px;
+    left: 1%;
 }
 
 .createOptionForm {
-    top: 10px;
+    top: 2%;
 }
 
 .tradeOption {
-    right: 10px;
+    right: 2%;
 }
 
 .tradeStock {
-    left: 10px;
-    bottom: 10px;
+    left: 2%;
+    bottom: 2%;
 }
 
 #popover {

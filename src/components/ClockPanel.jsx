@@ -61,7 +61,7 @@ const Clock = React.createClass({
         return (
             <div className="clock">
                 <p>
-                    <span className="clockCity"><strong>{this.props.city}</strong><br/></span>
+                    <span className="clockCity"><strong>{this.props.city}</strong>{"\t"}</span>
                     { this.state.hours }:{ this.state.minutes }:{ this.state.seconds }
                     <span className='clockDiem'>{ this.state.diem }</span>
                 </p>
